@@ -4,8 +4,28 @@ description: |
   R Data Skills
 output_dir: "docs"
 navbar:
+  search: true
   right:
     - text: "Home"
+      href: index.html
+    - text: "First steps"
+      href: index.html
+    - text: "Wrangling"
+      href: index.html
+      menu:
+        - text: "Importing data"
+          href: index.html
+        - text: "Exporting data"
+          href: index.html
+        - text: "Data in R"
+          href: index.html
+        - text: "Exploring data"
+          href: index.html
+        - text: "Manipulating data"
+          href: index.html
+    - text: "Visualisation"
+      href: index.html
+    - text: "Analysis"
       href: index.html
     - text: "About"
       href: about.html
