@@ -88,29 +88,29 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>R Data Skills</title>
+  <title>How R You?</title>
 
-  <meta property="description" itemprop="description" content="Welcome to the website. I hope you enjoy it!"/>
+  <meta property="description" itemprop="description" content="fostering R data skills for health science"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="R Data Skills"/>
+  <meta property="og:title" content="How R You?"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Welcome to the website. I hope you enjoy it!"/>
+  <meta property="og:description" content="fostering R data skills for health science"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="R Data Skills"/>
+  <meta property="og:site_name" content="How R You?"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="R Data Skills"/>
-  <meta property="twitter:description" content="Welcome to the website. I hope you enjoy it!"/>
+  <meta property="twitter:title" content="How R You?"/>
+  <meta property="twitter:description" content="fostering R data skills for health science"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["R Data Skills"]},{"type":"character","attributes":{},"value":["Welcome to the website. I hope you enjoy it!\n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["How R You?"]},{"type":"character","attributes":{},"value":["fostering R data skills for health science\n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2087,7 +2087,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"R Data Skills","description":"Welcome to the website. I hope you enjoy it!","authors":[]}
+{"title":"How R You?","description":"fostering R data skills for health science","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2095,12 +2095,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a href="index.html" class="title">R Data Skills</a>
+<a href="index.html" class="title">How R You?</a>
 <input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
 </div>
 <div class="nav-right">
 <a href="index.html">Home</a>
-<a href="index.html">First steps</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+First steps
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="firststeps_intro.html">One big calculator</a>
+<a href="firststeps_functions.html">Functions</a>
+<a href="firststeps_datatypes.html">Data types</a>
+<a href="firststeps_preparations.html">Preparations</a>
+<a href="firststeps_writing.html">Writing code</a>
+<a href="firststeps_reproduce.html">Reproducibility</a>
+</div>
+</div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 Wrangling
@@ -2108,15 +2122,59 @@ Wrangling
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="index.html">Importing data</a>
-<a href="index.html">Exporting data</a>
-<a href="index.html">Data in R</a>
-<a href="index.html">Exploring data</a>
-<a href="index.html">Manipulating data</a>
+<a href="wrangling_datasets.html">Data sets</a>
+<a href="wrangling_import.html">Importing data</a>
+<a href="wrangling_export.html">Exporting data</a>
+<a href="wrangling_explore.html">Exploring data</a>
+<a href="wrangling_manipulate.html">Manipulating data</a>
+<a href="wrangling_simulation.html">Simulation</a>
+<a href="wrangling_imputation.html">Imputation</a>
 </div>
 </div>
-<a href="index.html">Visualisation</a>
-<a href="index.html">Analysis</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Visualization
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="viz_grammar.html">ggplot2 grammar</a>
+<a href="viz_types.html">Types / overview</a>
+<a href="viz_customization.html">Customization</a>
+<a href="viz_advanced.html">Advanced plotting</a>
+<a href="viz_tables.html">Tables</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Analysis
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="analysis_basics_par.html">Basics: Parametric</a>
+<a href="analysis_basics_nonpar.html">Basics: Non-Parametric</a>
+<a href="analysis_regression.html">Regression stories</a>
+<a href="analysis_mlm.html">Multilevel modelling</a>
+<a href="analysis_explore.html">Exploratory analysis</a>
+<a href="analysis_sem.html">SEM</a>
+<a href="analysis_power.html">Power</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Programming
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="programming_ifelse.html">If/else</a>
+<a href="programming_loops.html">Loops</a>
+<a href="programming_functions.html">Functions</a>
+<a href="programming_git.html">Version control</a>
+</div>
+</div>
+<a href="activities.html">Activities</a>
 <a href="about.html">About</a>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
@@ -2127,14 +2185,17 @@ Wrangling
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>R Data Skills</h1>
+<h1>How R You?</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Welcome to the website. I hope you enjoy it!</p></p>
+<p><p>fostering R data skills for health science</p></p>
 </div>
 
 
 <div class="d-article">
+<h1 id="not-yet">… not yet</h1>
+<p>This page is still under construction. May take some time…</p>
+<p><img src="media/under_construction.jpg" /></p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

@@ -1,0 +1,47 @@
+---
+title: "Wrangling"
+description: |
+  Datasets
+toc: TRUE
+toc_float: TRUE
+site: distill::distill_website
+---
+
+# Dataset 1 & 2: Gapminder & Babynames
+  
+For most data visualization purposes, we´ll use the `gampinder` and `babynames` datasets that come with the `gapminder` and `babynames` packages.
+
+```{r, echo = TRUE, eval = FALSE}
+install.packages("gapminder")
+library(gapminder)
+
+install.packages("babynames")
+library(babynames)
+```
+
+*Note*: The `gapminder` package exists for the purpose of teaching and making code examples. It is an excerpt of data found in specific spreadsheets on Gapminder.org circa 2010. It is not a definitive source of socioeconomic data and is not updated regularly. However, its easy implementation and clean structure make it good servant to demonstrate data wrangling and visualization techniques.
+
+* For more info on the `gapminder` data visit the [website](https://www.gapminder.org).
+
+* For more info on the `babynames` data visit [GitHub](https://github.com/hadley/babynames).
+
+
+# Dataset 3: Surgery Timing
+
+This open data set contains 32,001 elective general surgical patients. Age, gender, race, BMI, several comorbidities, several surgical risk indices, the surgical timing predictors (hour, day of week, month,moon phase) and the outcomes (30-day mortality and in-hosptial complication) are provided. The dataset is cleaned and complete (no missing data except for BMI). There are no outliers or data problems. These are data from a study by Sessier et al. “Operation Timing and 30-Day Mortality After Elective General Surgery”. Anesth Analg 2011; 113: 1423-8
+
+To further explore this dataset just follow these links:
+
+* [General information and study overview](https://www.causeweb.org/tshs/surgery-timing/)
+
+* [Data dictionary](https://www.causeweb.org/tshs/datasets/Surgery%20Timing%20Data%20Dictionary_2.pdf)
+
+# Dataset 4: Positive Psychology Intervention
+
+These two open datasets have been collected for replication purposes (so yes, this is a *real* study). The authors collected from 295 participants between 5 January 2012 and 22 August 2012 to replicate the effects of a positive psychology intervention.
+The main finding was contrary to that of the original study by Seligman et al.: All interventions, including the theoretically-neutral placebo, led to significant increases in happiness and to significant reductions in depression. The effects of the positive-psychology interventions were statistically indistinguishable from those of the placebo.
+
+The *first dataset* comprises 992 point-in-time records of self-reported happiness and depression in 295 participants, each assigned to one of four intervention groups, in a study of the effect of web-based positive-psychology interventions. Each point-in-time measurement consists of a participant’s responses to the 24 items of the Authentic Happiness Inventory and to the 20 items of the Center for Epidemiological Studies Depression (CES-D) scale. Measurements were sought at the time of each participant’s enrollment in the study and on five subsequent occasions, the last being approximately 189 days after enrolment. 
+The *second dataset* contains basic demographic information about each participant.
+
+[Woodworth, R.J., O'Brien-Malone, A., Diamond, M.R. and Schüz, B., 2018. Data from, ‘Web-based Positive Psychology Interventions: A Reexamination of Effectiveness’. Journal of Open Psychology Data, 6(1).](https://openpsychologydata.metajnl.com/articles/10.5334/jopd.35/)

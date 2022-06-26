@@ -1,0 +1,17 @@
+---
+title: "How R You?"
+description: |
+  fostering R data skills for health science
+toc: TRUE
+toc_float: TRUE
+site: distill::distill_website
+---
+
+# ... not yet
+  
+This page is still under construction. May take some time...
+
+![](under_construction.jpg)
+
+
+

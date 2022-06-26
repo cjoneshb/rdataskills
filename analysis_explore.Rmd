@@ -1,0 +1,18 @@
+---
+title: "Soon"
+description: |
+  fostering R data skills for health science
+toc: TRUE
+toc_float: TRUE
+site: distill::distill_website
+---
+
+# ... not yet there
+  
+This page is still under construction. May take some time...
+
+BER picture
+
+
+
+

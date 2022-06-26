@@ -1,18 +1,15 @@
 ---
-title: "R Data Skills"
+title: "How R You?"
 description: |
-  Welcome to the website. I hope you enjoy it!
+  fostering R data skills for health science
 site: distill::distill_website
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+# ... not yet
+  
+This page is still under construction. May take some time...
 
-# Learn more about creating websites with Distill at:
-# https://rstudio.github.io/distill/website.html
+![](media/under_construction.jpg)
 
-# Learn more about publishing to GitHub Pages at:
-# https://rstudio.github.io/distill/publish_website.html#github-pages
 
-```
 

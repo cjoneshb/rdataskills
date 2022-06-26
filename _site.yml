@@ -1,7 +1,7 @@
 name: "rdataskills"
-title: "R Data Skills"
+title: "How R You?"
 description: |
-  R Data Skills
+  fostering R data skills for health science
 output_dir: "docs"
 navbar:
   search: true
@@ -9,24 +9,82 @@ navbar:
     - text: "Home"
       href: index.html
     - text: "First steps"
-      href: index.html
-    - text: "Wrangling"
-      href: index.html
+      href: firststeps.html
       menu:
+        - text: "One big calculator"
+          href: firststeps_intro.html
+        - text: "Functions"
+          href: firststeps_functions.html
+        - text: "Data types"
+          href: firststeps_datatypes.html
+        - text: "Preparations"
+          href: firststeps_preparations.html
+        - text: "Writing code"
+          href: firststeps_writing.html
+        - text: "Reproducibility"
+          href: firststeps_reproduce.html
+    - text: "Wrangling"
+      href: wrangling.html
+      menu:
+        - text: "Data sets"
+          href: wrangling_datasets.html
         - text: "Importing data"
-          href: index.html
+          href: wrangling_import.html
         - text: "Exporting data"
-          href: index.html
-        - text: "Data in R"
-          href: index.html
+          href: wrangling_export.html
         - text: "Exploring data"
-          href: index.html
+          href: wrangling_explore.html
         - text: "Manipulating data"
-          href: index.html
-    - text: "Visualisation"
-      href: index.html
+          href: wrangling_manipulate.html
+        - text: "Simulation"
+          href: wrangling_simulation.html
+        - text: "Imputation"
+          href: wrangling_imputation.html
+    - text: "Visualization"
+      href: viz.html
+      menu:
+        - text: "ggplot2 grammar"
+          href: viz_grammar.html
+        - text: "Types / overview"
+          href: viz_types.html
+        - text: "Customization"
+          href: viz_customization.html
+        - text: "Advanced plotting"
+          href: viz_advanced.html
+        - text: "Tables"
+          href: viz_tables.html
     - text: "Analysis"
-      href: index.html
+      href: analysis.html
+      menu:
+        - text: "Basics: Parametric"
+          href: analysis_basics_par.html
+        - text: "Basics: Non-Parametric"
+          href: analysis_basics_nonpar.html
+        - text: "Regression stories"
+          href: analysis_regression.html
+        - text: "Multilevel modelling"
+          href: analysis_mlm.html
+        - text: "Exploratory analysis"
+          href: analysis_explore.html
+        - text: "SEM"
+          href: analysis_sem.html
+        - text: "Power"
+          href: analysis_power.html
+    - text: "Programming"
+      href: programming.html
+      menu:
+        - text: "If/else"
+          href: programming_ifelse.html
+        - text: "Loops"
+          href: programming_loops.html
+        - text: "Functions"
+          href: programming_functions.html
+        - text: "Version control"
+          href: programming_git.html
+    - text: "Activities"
+      href: activities.html
     - text: "About"
       href: about.html
+toc: TRUE
+toc_float: TRUE
 output: distill::distill_article

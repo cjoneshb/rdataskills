@@ -1,7 +1,9 @@
 ---
-title: "About this site"
+title: "About"
 description: |
-  Some additional details about the website
+  fostering R data skills for health science
+toc: TRUE
+toc_float: TRUE
 ---
 
 ```{r setup, include=FALSE}
