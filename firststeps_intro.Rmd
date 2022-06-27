@@ -22,7 +22,7 @@ An important distinction to remember is between the R programming language itsel
 
 R Studio has a console that you can try out code in (appearing as the bottom left window in Figure below), there is a script editor (top left), a window showing functions and objects you have created in the “environment” tab (top right window in the figure), and a window that shows plots, files packages, and help documentation (bottom right).
 
-![](rstudio_ide.png)
+![](media/rstudio_ide.png)
 
 # One big calculator
 ## Console vs. scripts
