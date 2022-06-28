@@ -2152,8 +2152,7 @@ Analysis
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="analysis_basics_par.html">Basics: Parametric</a>
-<a href="analysis_basics_nonpar.html">Basics: Non-Parametric</a>
+<a href="analysis_basics.html">Basics</a>
 <a href="analysis_regression.html">Regression stories</a>
 <a href="analysis_mlm.html">Multilevel modelling</a>
 <a href="analysis_explore.html">Exploratory analysis</a>
@@ -2203,7 +2202,7 @@ Programming
 
 </div>
 <h1 id="introduction">Introduction</h1>
-<p>Being able to visualise our variables, and relationships between our
+<p>Being able to visualize our variables, and relationships between our
 variables, is a very useful skill. Before we do any statistical analyses
 or present any summary statistics, we should visualize our data as it
 is:</p>
@@ -2222,8 +2221,8 @@ of what’s possible).</p>
 <p><img src="media/viz_layers.png" /></p>
 <h1 id="preparing-the-data">Preparing the data</h1>
 <p>As we will again use the data from the positive psychology
-replication study, we´ll quickly re-run import, inner_join() and
-selection of variables of interest.</p>
+replication study, we´ll quickly re-run import,
+<code>inner_join()</code> and selection of variables of interest.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span> <span class='op'>(</span><span class='st'>"datasets/positive_psychology/ahi-cesd.csv"</span><span class='op'>)</span> <span class='co'># import intervention data</span>
@@ -2290,7 +2289,7 @@ variable with the same data but classified as a <code>factor</code>.</p>
 sex with sex as a factor”.</p>
 <p>Remember this. It’s a really important step and <em>if your graphs
 are looking weird this might be the reason</em>.</p>
-<h1 id="example-1-bar-plot">Example 1: Bar plot</h1>
+<h1 id="example-bar-plot">Example: Bar plot</h1>
 <p>For our first example we will recreate the bar plot showing the
 number of male and female participants from loading data by showing you
 how the layers of code build up.</p>
@@ -2493,7 +2492,7 @@ happens.</p></li>
 </div>
 <p><img src="viz_grammar_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
 </div>
-<h1 id="example-2-scatterplot">Example 2: Scatterplot</h1>
+<h1 id="activity-6-scatterplot">Activity 6: Scatterplot</h1>
 <p>We will now work with our data to generate a scatterplot of
 <em>two</em> variables.</p>
 <p>First, we want to look at whether there seems to be a relationship
@@ -2579,7 +2578,7 @@ about the same for male and female participants.</p>
 <p>Create another scatterplot that shows the relationship between
 happiness and depression grouped by <code>educ</code>. Make sure you
 update the legend labels.</p>
-<h2 id="group-by-a-new-variable">Group by a new variable</h2>
+<p>Activity 7: Group by a new variable</p>
 <p>So, let’s be honest, there’s not much going on with any of the
 demographic variables - the relationship between depression and anxiety
 is pretty much the same for all of the groups. A reasonable hypothesis
@@ -2602,10 +2601,178 @@ if it is below.</p></li>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="viz_grammar_files/figure-html5/unnamed-chunk-19-1.png" width="624" /></p>
 </div>
+<h1 id="developing-plots-and-questions">Developing plots (and
+questions)</h1>
+<p>A big advantage of ggplot2 over Base R plotting functions is the
+relative ease you can developing your plotting approach with. It´s
+fairly easy to add or change smaller details or provide additional depth
+of analysis within just a few lines of code.</p>
+<p>To show how such a “process” might look, we´ll start with a very
+simplistic view of the world: The western world (Western Europe and
+North America) is characterized by long life spans and small families,
+opposed to the “developing” world (Africa, Asia, and Latin America)
+which is characterized by short life spans and large families. But do
+the data support this dichotomous view? (And, should we talk about
+Australia, maybe?)</p>
+<p>The necessary data to answer this question is also available in the
+<code>gapminder</code> package. Using our newly learned data
+visualization skills, we will be able to tackle this challenge.</p>
+<p>In order to analyze this view, our first plot is a scatterplot of
+life expectancy versus fertility rates (average number of children per
+woman). We start by looking at data from about 60 years ago, when
+perhaps this view was first cemented in our minds.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>gapminder</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"datasets/gapminder_extended.csv"</span><span class='op'>)</span>
+
+<span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'>==</span> <span class='fl'>1962</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-20-1.png" width="624" /></p>
+</div>
+<p>Most points fall into two rather distinct categories:</p>
+<ul>
+<li><p>Life expectancy around 70 years and 3 or fewer children per
+family.</p></li>
+<li><p>Life expectancy lower than 65 years and more than 5 children per
+family.</p></li>
+</ul>
+<p>To confirm that indeed these countries are from the regions the
+proposed world view predicts, we can use color to represent
+continent.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'>==</span> <span class='fl'>1962</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span>, color <span class='op'>=</span> <span class='va'>continent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> 
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-21-1.png" width="624" /></p>
+</div>
+<p>In 1962, “the West / developing world” might have been grounded in
+some reality. How does the case look about 50 years later? (This is due
+to missing data for the last decade, of course.)</p>
+<h2 id="faceting">Faceting</h2>
+<p>We could easily plot the 2012 data in the same way we did for 1962.
+To make comparisons, however, side by side plots would be neat. In
+ggplot2, we can achieve this by faceting variables: we stratify the data
+by some variable and make the same plot for each.</p>
+<p>To achieve faceting, we add a layer with the function
+<code>facet_grid</code>, which automatically separates the plots. This
+function lets you facet by up to two variables using columns to
+represent one variable and rows to represent the other. The function
+expects the <code>row</code> and <code>column</code> variables to be
+separated by a <code>~</code>. Here is an example of a scatterplot with
+<code>facet_grid</code> added as the <em>last layer</em>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1962</span>, <span class='fl'>2012</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span>, color <span class='op'>=</span> <span class='va'>continent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_grid.html'>facet_grid</a></span><span class='op'>(</span><span class='va'>continent</span> <span class='op'>~</span> <span class='va'>year</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-22-1.png" width="624" /></p>
+</div>
+<p>We see a plot for each continent/year pair. However, this is just an
+example and more than what we want, which is simply to compare 1962 and
+2012. In this case, there is just one variable and we use <code>.</code>
+to let <code>facet</code> know that we are not using one of the
+variables:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1962</span>, <span class='fl'>2012</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span>, color <span class='op'>=</span> <span class='va'>continent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_grid.html'>facet_grid</a></span><span class='op'>(</span><span class='va'>.</span> <span class='op'>~</span> <span class='va'>year</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-23-1.png" width="624" /></p>
+</div>
+<p>This plot hints that the majority of countries have moved towards the
+higher life expectancy / lower fertility cluster. In 2012, the western /
+developing world view no longer makes sense - if it ever made. This is
+particularly clear when comparing Europe to Asia, the latter of which
+includes several countries that have changed dramatically.</p>
+<h2 id="facet_wrap">facet_wrap</h2>
+<p>To explore how this transformation happened through the years, we can
+make the plot for several years. For example, we can add 1970, 1980,
+1990, and 2000. If we do this, we will not want all the plots on the
+same row, the default behavior of <code>facet_grid</code>, since they
+will become too thin to show the data. Instead, we will want to use
+multiple rows and columns. <code>facet_wrap</code> permits us to do this
+by automatically wrapping the series of plots so that each display has
+viewable dimensions:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>years</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1962</span>, <span class='fl'>1980</span>, <span class='fl'>1990</span>, <span class='fl'>2000</span>, <span class='fl'>2012</span><span class='op'>)</span>
+<span class='va'>continents</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Europe"</span>, <span class='st'>"Asia"</span><span class='op'>)</span>
+
+<span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='va'>years</span> <span class='op'>&amp;</span> <span class='va'>continent</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='va'>continents</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span>, color <span class='op'>=</span> <span class='va'>continent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='va'>.</span> <span class='op'>~</span><span class='va'>year</span><span class='op'>)</span> 
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-24-1.png" width="624" /></p>
+</div>
+<p>This plot clearly shows how most Asian countries have improved at a
+much faster rate than European ones.</p>
+<h2 id="fixed-scales-for-better-comparisons">Fixed scales for better
+comparisons</h2>
+<p>The default choice of the range of the axes is important. When not
+using <code>facet</code>, this range is determined by the data shown in
+the plot. When using <code>facet</code>, this range is determined by the
+data shown in all plots and therefore kept <em>fixed</em> across plots.
+This makes comparisons across plots much easier. For example, in the
+above plot, we can see that life expectancy has increased and the
+fertility has decreased across most countries. We see this because the
+cloud of points moves. This is not the case if we adjust the scales:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1962</span>, <span class='fl'>2012</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span>, color <span class='op'>=</span> <span class='va'>continent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='va'>.</span> <span class='op'>~</span> <span class='va'>year</span>, scales <span class='op'>=</span> <span class='st'>"free"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-25-1.png" width="624" /></p>
+</div>
+<p>In the plot above, we have to pay special attention to the range to
+notice that the plot on the right has a larger life expectancy.</p>
+<p>After fixing the scales again, we should now provide some finishing
+touches:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>gapminder</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>year</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='va'>years</span> <span class='op'>&amp;</span> <span class='va'>continent</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='va'>continents</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>fertility</span>, <span class='va'>life_expectancy</span>, color <span class='op'>=</span> <span class='va'>continent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_continuous</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Fertility"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Life Expectancy"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='va'>.</span> <span class='op'>~</span> <span class='va'>year</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_color_viridis_d</a></span><span class='op'>(</span>option <span class='op'>=</span> <span class='st'>"E"</span>,
+                        name <span class='op'>=</span> <span class='st'>"Continent"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>"Life Expectancy and Fertility since 1962"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="viz_grammar_files/figure-html5/unnamed-chunk-26-1.png" width="624" /></p>
+</div>
 <h1 id="more-plotting-options">More plotting options</h1>
 <p><code>ggplot2</code> provides us with a host of different plotting
 options for different types of data. I´ll provide a brief overview of
-the most common ones under the <code>Types / overview</code>-tab.</p>
+the most common ones under the <code>Types / overview</code>-tab
+soonish. For now, you should definitely check out this awesome <a
+href="https://www.data-to-viz.com">website</a>.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

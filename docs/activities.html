@@ -2152,8 +2152,7 @@ Analysis
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="analysis_basics_par.html">Basics: Parametric</a>
-<a href="analysis_basics_nonpar.html">Basics: Non-Parametric</a>
+<a href="analysis_basics.html">Basics</a>
 <a href="analysis_regression.html">Regression stories</a>
 <a href="analysis_mlm.html">Multilevel modelling</a>
 <a href="analysis_explore.html">Exploratory analysis</a>
@@ -2262,40 +2261,29 @@ setting in the YAML-header (i.e., your name.)</p>
 <li><p>We always the date to be up-to-date: Try to replace the set date
 by a function we have used before (hint: your computer like to tell
 you)</p></li>
-<li><p>Add the following options to the YAML-header</p>
+<li><p>Add the following options to the YAML-header</p></li>
+</ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>output</span><span class='op'>:</span> 
-<span class='fu'>bookdown</span><span class='fu'>::</span><span class='va'><a href='https://pkgs.rstudio.com/bookdown/reference/html_document2.html'>html_document2</a></span><span class='op'>:</span>
-  <span class='va'>toc</span><span class='op'>:</span> <span class='cn'>TRUE</span>
-  <span class='va'>toc_float</span><span class='op'>:</span> <span class='cn'>TRUE</span>
+  <span class='fu'>bookdown</span><span class='fu'>::</span><span class='va'><a href='https://pkgs.rstudio.com/bookdown/reference/html_document2.html'>html_document2</a></span><span class='op'>:</span>
+    <span class='va'>toc</span><span class='op'>:</span> <span class='cn'>TRUE</span>
+    <span class='va'>toc_float</span><span class='op'>:</span> <span class='cn'>TRUE</span>
 </code></pre>
-</div></li>
-</ul>
+</div>
 </div>
 <ul>
 <li>Add a new headline to the RMarkdown file (indicated by the
 <code>#</code>) and copy and paste the following code beneath (set
-<code>eval =</code> to <code>TRUE</code>)
+<code>eval =</code> to <code>TRUE</code>)</li>
+</ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r">
-<code class="sourceCode r"><span
-class="fu"><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span
-class="op">(</span><span class="fl">12042016</span><span
-class="op">)</span> <span class="va">norm_distb</span> <span
-class="op">&lt;-</span> <span
-class="fu"><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span
-class="op">(</span>n <span class="op">=</span> <span
-class="fl">600</span>, mean <span class="op">=</span> <span
-class="fl">10</span>, sd <span class="op">=</span> <span
-class="fl">2</span><span class="op">)</span></li>
-</ul>
-<span
-class="fu"><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span
-class="op">(</span><span class="va">norm_distb</span><span
-class="op">)</span> </code>
-</pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>12042016</span><span class='op'>)</span>
+<span class='va'>norm_distb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>600</span>, mean <span class='op'>=</span> <span class='fl'>10</span>, sd <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>norm_distb</span><span class='op'>)</span>
+</code></pre>
 </div>
 </div>
 <ul>
@@ -2310,7 +2298,7 @@ Try to import one of the datasets you can find via the
 <p>Is part of the introductory post on grammar of ggplot2.</p>
 <h2 id="activity-7">Activity 7</h2>
 <p>Is part of the introductory post on grammar of ggplot2.</p>
-<h2 id="acitivity-8">Acitivity 8</h2>
+<h2 id="activity-8">Activity 8</h2>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

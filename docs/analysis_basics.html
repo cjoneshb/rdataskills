@@ -2152,8 +2152,7 @@ Analysis
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="analysis_basics_par.html">Basics: Parametric</a>
-<a href="analysis_basics_nonpar.html">Basics: Non-Parametric</a>
+<a href="analysis_basics.html">Basics</a>
 <a href="analysis_regression.html">Regression stories</a>
 <a href="analysis_mlm.html">Multilevel modelling</a>
 <a href="analysis_explore.html">Exploratory analysis</a>
@@ -2199,10 +2198,394 @@ Programming
 
 </nav>
 </div>
-<h1 id="not-yet-there">… not yet there</h1>
-<p>This page is still under construction. May take some time…</p>
-<p>BER picture</p>
-<div class="sourceCode" id="cb1"><pre
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>After exploring our example data sets, on this page, I´ll briefly
+cover different statistical methods to e.g., compare two means or
+several means. For this purpose, we will again use the positive
+psychology intervention dataset (and a brief summary subset of it).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'>read_csv</span> <span class='op'>(</span><span class='st'>"datasets/positive_psychology/ahi-cesd.csv"</span><span class='op'>)</span> <span class='co'># import intervention data</span>
+<span class='va'>pinfo</span> <span class='op'>&lt;-</span> <span class='fu'>read_csv</span><span class='op'>(</span><span class='st'>"datasets/positive_psychology/participant-info.csv"</span><span class='op'>)</span> <span class='co'># import participant data</span>
+
+<span class='va'>all_dat</span> <span class='op'>&lt;-</span> <span class='fu'>inner_join</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>dat</span>,                      <span class='co'># the first table you want to join</span>
+                      y <span class='op'>=</span> <span class='va'>pinfo</span>,                    <span class='co'># the second table you want to join</span>
+                      by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"id"</span>, <span class='st'>"intervention"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># columns the two tables have in common</span>
+
+<span class='va'>summarydata</span> <span class='op'>&lt;-</span> <span class='fu'>select</span><span class='op'>(</span>.data <span class='op'>=</span> <span class='va'>all_dat</span>, 
+                      <span class='va'>ahiTotal</span>, <span class='va'>cesdTotal</span>, <span class='va'>sex</span>, <span class='va'>age</span>, <span class='va'>educ</span>, <span class='va'>income</span>, <span class='va'>occasion</span>,<span class='va'>elapsed.days</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h1 id="descriptive-statistics">Descriptive statistics</h1>
+<h2 id="measures-of-central-tendency">Measures of central tendency</h2>
+<p>Drawing pictures of the data, as I did in Figure 5.1 is an excellent
+way to convey the “gist” of what the data is trying to tell you, it’s
+often extremely useful to try to condense the data into a few simple
+“summary” statistics. In most situations, the first thing that you’ll
+want to calculate is a measure of central tendency. That is, you’d like
+to know something about the “average” or “middle” of your data lies. The
+two most commonly used measures are the mean, median and mode;
+occasionally people will also report a trimmed mean.</p>
+<h3 id="mean">Mean</h3>
+<p>The mean is calculated with the <code>mean</code> function. Keep in
+mind to specify how to handle missing values by setting the
+<code>na.rm</code> argument to <code>TRUE</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 72.78831</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># The quite not-so-easy way</span>
+<span class='va'>summarydata</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>summarise</span><span class='op'>(</span>mean <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>ahiTotal</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 1 × 1
+   mean
+  &lt;dbl&gt;
+1  72.8</code></pre>
+</div>
+<h3 id="median">Median</h3>
+<p>Similar to the mean, the median is calculated with the
+<code>median</code> function. Again, keep in mind to specify how to
+handle missing values by setting the <code>na.rm</code> argument to
+<code>TRUE</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 74</code></pre>
+</div>
+<h3 id="trimmed-mean">Trimmed mean</h3>
+<p>As the mean is very sensitive to the influence of potential outliers
+(or just extreme values), you might be interested in providing a trimmed
+version of the mean. To calculate such an adjusted mean (e.g., 10%
+trim), you can expand the <code>mean</code> function:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, trim <span class='op'>=</span> <span class='fl'>.1</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 73.22292</code></pre>
+</div>
+<h2 id="measures-of-variability">Measures of variability</h2>
+<p>The statistics that we’ve discussed so far all relate to central
+tendency. That is, they all talk about which values are “in the middle”
+or “popular” in the data. However, central tendency is not the only type
+of summary statistic that we want to calculate. The second thing that we
+really want is a measure of the variability of the data.</p>
+<h3 id="minimum-maximum-and-range">Minimum, maximum and range</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 32</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 114</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1]  32 114</code></pre>
+</div>
+<h3 id="quantiles-and-iqr">Quantiles and IQR</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, probs <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.25</span>, <span class='fl'>0.75</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>25% 75% 
+ 63  83 </code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/IQR.html'>IQR</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 20</code></pre>
+</div>
+<h3 id="variance-and-standard-deviation">Variance and Standard
+Deviation</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>var</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 201.6565</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/sd.html'>sd</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 14.20058</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>var</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 14.20058</code></pre>
+</div>
+<h3 id="skew-and-kurtosis">Skew and Kurtosis</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://personality-project.org/r/psych/'>psych</a></span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/pkg/psych/man/skew.html'>skew</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] -0.2278947</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/psych/man/skew.html'>kurtosi</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] -0.1450682</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="analysis_basics_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
+</div>
+<h2 id="correlations">Correlations</h2>
+<p>Up to this point we have focused entirely on how to construct
+descriptive statistics for a single variable. What we haven’t done is
+talked about how to describe the relationships between variables in the
+data. To do that, we want to talk mostly about the correlation between
+variables.</p>
+<h3 id="pearsons-correlation-coefficient">Pearson´s correlation
+coefficient</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, y <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>cesdTotal</span>, method <span class='op'>=</span> <span class='st'>'pearson'</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    Pearson&#39;s product-moment correlation
+
+data:  summarydata$ahiTotal and summarydata$cesdTotal
+t = -37.684, df = 990, p-value &lt; 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.7920134 -0.7407612
+sample estimates:
+       cor 
+-0.7676117 </code></pre>
+</div>
+<h3 id="spearmans-rank-correlations">Spearman´s rank correlations</h3>
+<p>The Pearson correlation coefficient is useful for a lot of things,
+but it does have shortcomings. One issue in particular stands out: what
+it actually measures is the strength of the linear relationship between
+two variables. In other words, what it gives you is a measure of the
+extent to which the data all tend to fall on a single, perfectly
+straight line. Often, this is a pretty good approximation to what we
+mean when we say “relationship”, and so the Pearson correlation is a
+good thing to calculation. Sometimes, it isn’t. An alternative in such
+cases can be Spearman´s rank order correlation.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, y <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>cesdTotal</span>, method <span class='op'>=</span> <span class='st'>'spearman'</span>, exact <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    Spearman&#39;s rank correlation rho
+
+data:  summarydata$ahiTotal and summarydata$cesdTotal
+S = 285349440, p-value &lt; 2.2e-16
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+       rho 
+-0.7538551 </code></pre>
+</div>
+<h3 id="plotting">Plotting</h3>
+<p>If you would like to not only provide readers with raw numbers or a
+huge table, but instead would like to plot a set of correlations, the
+<code>ggcorrplot</code> package offers some nice functionality.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://www.sthda.com/english/wiki/ggcorrplot'>ggcorrplot</a></span><span class='op'>)</span>
+
+<span class='co'># Create a subset of variables to be included in correaltion matrix</span>
+<span class='va'>corr_subset</span> <span class='op'>&lt;-</span> <span class='va'>summarydata</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='va'>ahiTotal</span>,
+         <span class='va'>cesdTotal</span>,
+         <span class='va'>age</span>,
+         <span class='va'>educ</span>,
+         <span class='va'>income</span><span class='op'>)</span>
+
+<span class='co'># Create a correlation matrix</span>
+<span class='va'>corr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='op'>(</span><span class='va'>corr_subset</span><span class='op'>)</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>          ahiTotal cesdTotal age educ income
+ahiTotal       1.0      -0.8   0  0.1    0.1
+cesdTotal     -0.8       1.0   0  0.0    0.0
+age            0.0       0.0   1  0.0    0.0
+educ           0.1       0.0   0  1.0    0.3
+income         0.1       0.0   0  0.3    1.0</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Compute a matrix of p-values (for correlations)</span>
+<span class='va'>p.mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/ggcorrplot/man/ggcorrplot.html'>cor_pmat</a></span><span class='op'>(</span><span class='va'>corr_subset</span><span class='op'>)</span>
+
+<span class='co'># Visualize the matrix</span>
+<span class='co'>## Boxes</span>
+<span class='fu'><a href='https://rdrr.io/pkg/ggcorrplot/man/ggcorrplot.html'>ggcorrplot</a></span><span class='op'>(</span><span class='va'>corr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<img src="analysis_basics_files/figure-html5/unnamed-chunk-12-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Fined tuned</span>
+<span class='fu'><a href='https://rdrr.io/pkg/ggcorrplot/man/ggcorrplot.html'>ggcorrplot</a></span><span class='op'>(</span><span class='va'>corr</span>, 
+           method <span class='op'>=</span> <span class='st'>"circle"</span>,
+           hc.order <span class='op'>=</span> <span class='cn'>TRUE</span>, 
+           type <span class='op'>=</span> <span class='st'>"lower"</span>,
+           outline.col <span class='op'>=</span> <span class='st'>"white"</span>,
+           ggtheme <span class='op'>=</span> <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='va'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span>,
+           colors <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#6D9EC1"</span>, <span class='st'>"white"</span>, <span class='st'>"#E46726"</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="analysis_basics_files/figure-html5/unnamed-chunk-12-2.png" width="624" /></p>
+</div>
+<h1 id="comparing-means">Comparing means</h1>
+<h2 id="t-test">t-test</h2>
+<p>There are three different kinds of t-test: the one sample test, the
+independent samples test (Student’s and Welch’s), and the paired samples
+test. R allows you to run all three by specific different arguments in
+the <code>t.test</code> function.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># One sample t-test</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, mu <span class='op'>=</span> <span class='fl'>70</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    One Sample t-test
+
+data:  summarydata$ahiTotal
+t = 6.1843, df = 991, p-value = 9.108e-10
+alternative hypothesis: true mean is not equal to 70
+95 percent confidence interval:
+ 71.90354 73.67307
+sample estimates:
+mean of x 
+ 72.78831 </code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Two sample t-test</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>ahiTotal</span> <span class='op'>~</span> <span class='va'>sex</span>, data <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  ahiTotal by sex
+t = 2.1577, df = 192.67, p-value = 0.03219
+alternative hypothesis: true difference in means between group 1 and group 2 is not equal to 0
+95 percent confidence interval:
+ 0.2513483 5.6001409
+sample estimates:
+mean in group 1 mean in group 2 
+       73.22776        70.30201 </code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Find Cohen´s d</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://personality-project.org/r/psych/'>psych</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/psych/man/cohen.d.html'>cohen.d</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, group <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>sex</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Call: cohen.d(x = summarydata$ahiTotal, group = summarydata$sex)
+Cohen d statistic of difference between two means
+     lower effect upper
+[1,] -0.38  -0.21 -0.03
+
+Multivariate (Mahalanobis) distance between groups
+[1] 0.21
+r equivalent of difference between two means
+ data 
+-0.07 </code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Paired samples t-test (example)</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>data</span><span class='op'>$</span><span class='va'>t1</span>, y <span class='op'>=</span> <span class='va'>data</span><span class='op'>$</span><span class='va'>t2</span>, paired <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h2 id="checking-the-normality-of-a-sample">Checking the normality of a
+sample</h2>
+<p>All of the tests that we have discussed so far have assumed that the
+data are normally distributed, or at least close enough to normal that
+you can get away with using t-tests. Okay, so if normality is assumed by
+all the tests, and is mostly but not always satisfied (at least
+approximately) by real world data, how can we check the normality of a
+sample?</p>
+<h3 id="q-q-plots">Q-Q-Plots</h3>
+<p>To draw a Q-Q-Plot to check normality of your sample distribution,
+you can use the <code>qqnorm</code> function.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/qqnorm.html'>qqnorm</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span> 
+</code></pre>
+</div>
+<p><img src="analysis_basics_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
+</div>
+<h3 id="shapiro-wilk-test">Shapiro-Wilk test</h3>
+<p>Although Q-Q-plots provide a nice way to informally check the
+normality of your data, sometimes you’ll want to do something a bit more
+formal. And when that moment comes, the Shapiro-Wilk test is probably
+what you’re looking for. As you’d expect, the null hypothesis being
+tested is that a set of <span class="math inline">\(N\)</span>
+observations is normally distributed.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/stats/shapiro.test.html'>shapiro.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  summarydata$ahiTotal
+W = 0.99038, p-value = 4.393e-06</code></pre>
+</div>
+<p>Fortunately, at least for me, as I now have to(!) introduce a
+non-parametric alternative, we find evidence that the distribution in
+our sample indeed deviates from normality. So what can we do?</p>
+<h3 id="two-sample-wilcoxon-test">Two sample Wilcoxon test</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># One sample</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>$</span><span class='va'>ahiTotal</span>, mu <span class='op'>=</span> <span class='fl'>70</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    Wilcoxon signed rank test with continuity correction
+
+data:  summarydata$ahiTotal
+V = 289206, p-value = 8.82e-11
+alternative hypothesis: true location is not equal to 70</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Two samples</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>ahiTotal</span> <span class='op'>~</span> <span class='va'>sex</span>, data <span class='op'>=</span> <span class='va'>summarydata</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+    Wilcoxon rank sum test with continuity correction
+
+data:  ahiTotal by sex
+W = 69434, p-value = 0.03969
+alternative hypothesis: true location shift is not equal to 0</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Paired samples (example)</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>data</span><span class='op'>$</span><span class='va'>t1</span>, y <span class='op'>=</span> <span class='va'>data</span><span class='op'>$</span><span class='va'>t2</span>, paired <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="sourceCode" id="cb24"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
@@ -2211,6 +2594,15 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->

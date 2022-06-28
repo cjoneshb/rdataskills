@@ -92,16 +92,16 @@ and there’s a blinking cursor next to the plus sign. What this means is that R
 + 20
 ```
 
-And as far as R is concerned, this is exactly the same as if you had typed 10 + 20. Similarly, consider the citation() command that we talked about in the previous section. Suppose you hit enter after typing citation(. Once again, R is smart enough to realise that there must be more coming – since you need to add the ) character – so it waits. I can even hit enter several times and it will keep waiting:
+And as far as R is concerned, this is exactly the same as if you had typed 10 + 20. Similarly, consider the citation() command that we talked about in the previous section. Suppose you hit enter after typing citation(. Once again, R is smart enough to realize that there must be more coming – since you need to add the ) character – so it waits. I can even hit enter several times and it will keep waiting:
 
 ```{r, echo = TRUE, eval = FALSE}
 citation( 
-+
-+
-+)
+
+  
+  )
 ```
 
-Sometimes when doing this, you’ll eventually get yourself in trouble (it happens to us all). Maybe you start typing a command, and then you realise you’ve screwed up. For example,
+Sometimes when doing this, you’ll eventually get yourself in trouble (it happens to us all). Maybe you start typing a command, and then you realize you’ve screwed up. For example,
 
 ```{r, echo = TRUE, eval = FALSE}
 citblation(

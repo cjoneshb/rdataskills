@@ -2152,8 +2152,7 @@ Analysis
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="analysis_basics_par.html">Basics: Parametric</a>
-<a href="analysis_basics_nonpar.html">Basics: Non-Parametric</a>
+<a href="analysis_basics.html">Basics</a>
 <a href="analysis_regression.html">Regression stories</a>
 <a href="analysis_mlm.html">Multilevel modelling</a>
 <a href="analysis_explore.html">Exploratory analysis</a>
@@ -2746,7 +2745,7 @@ constructing a data frame, and the function we use to do this is
 previous section, this command would work:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tib</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span><span class='va'>region</span>, <span class='va'>support</span>, <span class='va'>RT</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tib</span> <span class='op'>&lt;-</span> <span class='fu'>tibble</span><span class='op'>(</span><span class='va'>region</span>, <span class='va'>support</span>, <span class='va'>RT</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -2757,7 +2756,7 @@ Fortunately, I can <code>coerce</code> my existing data frame
 <code>tib</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tib</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tib</span> <span class='op'>&lt;-</span> <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span>
 <span class='va'>tib</span>
 </code></pre>
 </div>
@@ -3265,7 +3264,7 @@ the <code>Sys.Date</code> function:</p>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>today</span><span class='op'>)</span>         <span class='co'># display the date</span>
 </code></pre>
 </div>
-<pre><code>[1] &quot;2022-06-26&quot;</code></pre>
+<pre><code>[1] &quot;2022-06-28&quot;</code></pre>
 </div>
 <p>Okay, that seems straightforward. But, it does rather look like today
 is just a character string, doesn’t it? That would be a problem, because
@@ -3281,7 +3280,7 @@ add 1 to today, R will print out the date for tomorrow:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>today</span> <span class='op'>+</span> <span class='fl'>1</span>
 </code></pre>
 </div>
-<pre><code>[1] &quot;2022-06-27&quot;</code></pre>
+<pre><code>[1] &quot;2022-06-29&quot;</code></pre>
 </div>
 <p>Let’s see what happens when we add 365 days:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -3289,7 +3288,7 @@ add 1 to today, R will print out the date for tomorrow:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>today</span> <span class='op'>+</span> <span class='fl'>365</span>
 </code></pre>
 </div>
-<pre><code>[1] &quot;2023-06-26&quot;</code></pre>
+<pre><code>[1] &quot;2023-06-28&quot;</code></pre>
 </div>
 <p>R provides a number of functions for working with dates, but I don’t
 want to talk about them in any detail, other than to say that the

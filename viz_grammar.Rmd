@@ -14,7 +14,7 @@ detach("package:MASS", unload=TRUE)
 
 # Introduction
 
-Being able to visualise our variables, and relationships between our variables, is a very useful skill. Before we do any statistical analyses or present any summary statistics, we should visualize our data as it is:
+Being able to visualize our variables, and relationships between our variables, is a very useful skill. Before we do any statistical analyses or present any summary statistics, we should visualize our data as it is:
 
 * A quick and easy way to check our data make sense, and to identify any unusual trends.
 
@@ -25,7 +25,7 @@ Being able to visualise our variables, and relationships between our variables, 
 ![](media/viz_layers.png)
 
 # Preparing the data
-As we will again use the data from the positive psychology replication study, we´ll quickly re-run import, inner_join() and selection of variables of interest.
+As we will again use the data from the positive psychology replication study, we´ll quickly re-run import, `inner_join()` and selection of variables of interest.
 
 ```{r, echo = TRUE, eval = TRUE}
 dat <- read_csv ("datasets/positive_psychology/ahi-cesd.csv") # import intervention data
@@ -62,7 +62,7 @@ You can read this code as "overwrite the data that is in the column sex with sex
 
 Remember this. It's a really important step and *if your graphs are looking weird this might be the reason*.
 
-# Example 1: Bar plot
+# Example: Bar plot
 
 For our first example we will recreate the bar plot showing the number of male and female participants from loading data by showing you how the layers of code build up.
 
@@ -192,7 +192,7 @@ ggplot(summarydata, aes(x = income, y = ahiTotal, fill = income)) +
   scale_fill_viridis_d()
 ``` 
 
-# Example 2: Scatterplot
+# Activity 6: Scatterplot 
 
 We will now work with our data to generate a scatterplot of *two* variables.
 
@@ -269,7 +269,7 @@ It looks like the relationship between happiness and depression is about the sam
 
 Create another scatterplot that shows the relationship between happiness and depression grouped by `educ`. Make sure you update the legend labels.
 
-## Group by a new variable
+Activity 7: Group by a new variable
 
 So, let's be honest, there's not much going on with any of the demographic variables - the relationship between depression and anxiety is pretty much the same for all of the groups. A reasonable hypothesis might be that rather than being connected to any demographic variables, *the relationship between happiness and depression changes depending upon your general happiness level*.
 
@@ -296,6 +296,115 @@ ggplot(summarydata, aes(x = ahiTotal , y = cesdTotal, colour = happiness)) +
                        option = "E")
 ```
 
+# Developing plots (and questions)
+
+A big advantage of ggplot2 over Base R plotting functions is the relative ease you can developing your plotting approach with. It´s fairly easy to add or change smaller details or provide additional depth of analysis within just a few lines of code.
+
+To show how such a "process" might look, we´ll start with a very simplistic view of the world: The western world (Western Europe and North America) is characterized by long life spans and small families, opposed to the "developing" world (Africa, Asia, and Latin America) which is characterized by short life spans and large families. But do the data support this dichotomous view? (And, should we talk about Australia, maybe?)
+
+The necessary data to answer this question is also available in the `gapminder` package. Using our newly learned data visualization skills, we will be able to tackle this challenge.
+
+In order to analyze this view, our first plot is a scatterplot of life expectancy versus fertility rates (average number of children per woman). We start by looking at data from about 60 years ago, when perhaps this view was first cemented in our minds.
+
+```{r, echo = TRUE, eval = TRUE}
+gapminder <- read_csv("datasets/gapminder_extended.csv")
+
+gapminder %>%
+  filter(year == 1962) %>%
+  ggplot(aes(fertility, life_expectancy)) +
+  geom_point()
+```
+
+Most points fall into two rather distinct categories:
+
+* Life expectancy around 70 years and 3 or fewer children per family.
+
+* Life expectancy lower than 65 years and more than 5 children per family.
+
+To confirm that indeed these countries are from the regions the proposed world view predicts, we can use color to represent continent.
+
+```{r, echo = TRUE, eval = TRUE}
+gapminder %>%
+  filter(year == 1962) %>%
+  ggplot( aes(fertility, life_expectancy, color = continent)) +
+  geom_point() 
+```
+
+In 1962, “the West / developing world” might have been grounded in some reality. How does the case look about 50 years  later? (This is due to missing data for the last decade, of course.)
+
+## Faceting
+
+We could easily plot the 2012 data in the same way we did for 1962. To make comparisons, however, side by side plots would be neat. In ggplot2, we can achieve this by faceting variables: we stratify the data by some variable and make the same plot for each.
+
+To achieve faceting, we add a layer with the function `facet_grid`, which automatically separates the plots. This function lets you facet by up to two variables using columns to represent one variable and rows to represent the other. The function expects the `row` and `column` variables to be separated by a `~`. Here is an example of a scatterplot with `facet_grid` added as the *last layer*:
+
+```{r, echo = TRUE, eval = TRUE}
+gapminder %>%
+  filter(year %in% c(1962, 2012)) %>%
+  ggplot(aes(fertility, life_expectancy, color = continent)) +
+  geom_point() +
+  facet_grid(continent ~ year)
+```
+
+We see a plot for each continent/year pair. However, this is just an example and more than what we want, which is simply to compare 1962 and 2012. In this case, there is just one variable and we use `.` to let `facet` know that we are not using one of the variables:
+
+```{r, echo = TRUE, eval = TRUE}
+gapminder %>%
+  filter(year %in% c(1962, 2012)) %>%
+  ggplot(aes(fertility, life_expectancy, color = continent)) +
+  geom_point() +
+  facet_grid(. ~ year)
+```
+
+This plot hints that the majority of countries have moved towards the higher life expectancy / lower fertility cluster. In 2012, the western / developing world view no longer makes sense - if it ever made. This is particularly clear when comparing Europe to Asia, the latter of which includes several countries that have changed dramatically.
+
+## facet_wrap
+
+To explore how this transformation happened through the years, we can make the plot for several years. For example, we can add 1970, 1980, 1990, and 2000. If we do this, we will not want all the plots on the same row, the default behavior of `facet_grid`, since they will become too thin to show the data. Instead, we will want to use multiple rows and columns. `facet_wrap` permits us to do this by automatically wrapping the series of plots so that each display has viewable dimensions:
+
+```{r, echo = TRUE, eval = TRUE}
+years <- c(1962, 1980, 1990, 2000, 2012)
+continents <- c("Europe", "Asia")
+
+gapminder %>% 
+  filter(year %in% years & continent %in% continents) %>%
+  ggplot( aes(fertility, life_expectancy, color = continent)) +
+  geom_point() +
+  facet_wrap(. ~year) 
+```
+
+This plot clearly shows how most Asian countries have improved at a much faster rate than European ones.
+
+## Fixed scales for better comparisons
+
+The default choice of the range of the axes is important. When not using `facet`, this range is determined by the data shown in the plot. When using `facet`, this range is determined by the data shown in all plots and therefore kept *fixed* across plots. This makes comparisons across plots much easier. For example, in the above plot, we can see that life expectancy has increased and the fertility has decreased across most countries. We see this because the cloud of points moves. This is not the case if we adjust the scales:
+
+```{r, echo = TRUE, eval = TRUE}
+gapminder %>%
+  filter(year %in% c(1962, 2012)) %>%
+  ggplot(aes(fertility, life_expectancy, color = continent)) +
+  geom_point() +
+  facet_wrap(. ~ year, scales = "free")
+```
+
+In the plot above, we have to pay special attention to the range to notice that the plot on the right has a larger life expectancy.
+
+After fixing the scales again, we should now provide some finishing touches:
+
+```{r, echo = TRUE, eval = TRUE}
+gapminder %>% 
+  filter(year %in% years & continent %in% continents) %>%
+  ggplot(aes(fertility, life_expectancy, color = continent)) +
+  geom_point() +
+  scale_x_continuous(name = "Fertility") +
+  scale_y_continuous(name = "Life Expectancy") +
+  facet_wrap(. ~ year) +
+  theme_minimal() +
+  scale_color_viridis_d(option = "E",
+                        name = "Continent") +
+  labs(title = "Life Expectancy and Fertility since 1962")
+```
+
 # More plotting options
 
-`ggplot2` provides us with a host of different plotting options for different types of data. I´ll provide a brief overview of the most common ones under the `Types / overview`-tab.
+`ggplot2` provides us with a host of different plotting options for different types of data. I´ll provide a brief overview of the most common ones under the `Types / overview`-tab soonish. For now, you should definitely check out this awesome [website](https://www.data-to-viz.com).

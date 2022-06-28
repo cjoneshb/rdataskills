@@ -1,0 +1,212 @@
+---
+title: "Soon"
+description: |
+  fostering R data skills for health science
+toc: TRUE
+toc_float: TRUE
+site: distill::distill_website
+---
+
+```{r, echo = FALSE, eval = TRUE}
+library(tidyverse)
+library(readr)
+```
+
+After exploring our example data sets, on this page, I´ll briefly cover different statistical methods to e.g., compare two means or several means. For this purpose, we will again use the positive psychology intervention dataset (and a brief summary subset of it).
+
+```{r, echo = TRUE, eval = TRUE}
+dat <- read_csv ("datasets/positive_psychology/ahi-cesd.csv") # import intervention data
+pinfo <- read_csv("datasets/positive_psychology/participant-info.csv") # import participant data
+
+all_dat <- inner_join(x = dat,                      # the first table you want to join
+                      y = pinfo,                    # the second table you want to join
+                      by = c("id", "intervention")) # columns the two tables have in common
+
+summarydata <- select(.data = all_dat, 
+                      ahiTotal, cesdTotal, sex, age, educ, income, occasion,elapsed.days)
+```
+
+# Descriptive statistics
+
+## Measures of central tendency
+
+Drawing pictures of the data, as I did in Figure 5.1 is an excellent way to convey the “gist” of what the data is trying to tell you, it’s often extremely useful to try to condense the data into a few simple “summary” statistics. In most situations, the first thing that you’ll want to calculate is a measure of central tendency. That is, you’d like to know something about the “average” or “middle” of your data lies. The two most commonly used measures are the mean, median and mode; occasionally people will also report a trimmed mean.
+
+### Mean
+The mean is calculated with the `mean` function. Keep in mind to specify how to handle missing values by setting the `na.rm` argument to `TRUE`.
+
+```{r, echo = TRUE, eval = TRUE}
+mean(summarydata$ahiTotal)
+
+# The quite not-so-easy way
+summarydata %>%
+  summarise(mean = mean(ahiTotal))
+```
+
+### Median
+Similar to the mean, the median is calculated with the `median` function. Again, keep in mind to specify how to handle missing values by setting the `na.rm` argument to `TRUE`.
+
+```{r, echo = TRUE, eval = TRUE}
+median(summarydata$ahiTotal)
+```
+
+### Trimmed mean
+As the mean is very sensitive to the influence of potential outliers (or just extreme values), you might be interested in providing a trimmed version of the mean. To calculate such an adjusted mean (e.g., 10% trim), you can expand the `mean` function:
+
+```{r, echo = TRUE, eval = TRUE}
+mean(summarydata$ahiTotal, trim = .1)
+```
+
+## Measures of variability
+
+The statistics that we’ve discussed so far all relate to central tendency. That is, they all talk about which values are “in the middle” or “popular” in the data. However, central tendency is not the only type of summary statistic that we want to calculate. The second thing that we really want is a measure of the variability of the data.
+
+### Minimum, maximum and range
+```{r, echo = TRUE, eval = TRUE}
+min(summarydata$ahiTotal)
+
+max(summarydata$ahiTotal)
+
+range(summarydata$ahiTotal)
+```
+
+### Quantiles and IQR
+```{r, echo = TRUE, eval = TRUE}
+quantile(summarydata$ahiTotal, probs = c(0.25, 0.75))
+
+IQR(summarydata$ahiTotal)
+```
+
+### Variance and Standard Deviation
+```{r, echo = TRUE, eval = TRUE}
+var(summarydata$ahiTotal)
+
+sd(summarydata$ahiTotal)
+
+sqrt(var(summarydata$ahiTotal))
+```
+
+### Skew and Kurtosis
+```{r, echo = TRUE, eval = TRUE}
+library(psych)
+
+skew(summarydata$ahiTotal)
+
+kurtosi(summarydata$ahiTotal)
+
+hist(summarydata$ahiTotal)
+```
+
+## Correlations
+
+Up to this point we have focused entirely on how to construct descriptive statistics for a single variable. What we haven’t done is talked about how to describe the relationships between variables in the data. To do that, we want to talk mostly about the correlation between variables. 
+
+### Pearson´s correlation coefficient
+
+```{r, echo = TRUE, eval = TRUE}
+cor.test(x = summarydata$ahiTotal, y = summarydata$cesdTotal, method = 'pearson')
+```
+
+### Spearman´s rank correlations
+
+The Pearson correlation coefficient is useful for a lot of things, but it does have shortcomings. One issue in particular stands out: what it actually measures is the strength of the linear relationship between two variables. In other words, what it gives you is a measure of the extent to which the data all tend to fall on a single, perfectly straight line. Often, this is a pretty good approximation to what we mean when we say “relationship”, and so the Pearson correlation is a good thing to calculation. Sometimes, it isn’t. An alternative in such cases can be Spearman´s rank order correlation.
+
+```{r, echo = TRUE, eval = TRUE}
+cor.test(x = summarydata$ahiTotal, y = summarydata$cesdTotal, method = 'spearman', exact = FALSE)
+```
+
+### Plotting
+
+If you would like to not only provide readers with raw numbers or a huge table, but instead would like to plot a set of correlations, the `ggcorrplot` package offers some nice functionality.
+
+```{r, echo = TRUE, eval = TRUE, warning = FALSE}
+library(ggcorrplot)
+
+# Create a subset of variables to be included in correaltion matrix
+corr_subset <- summarydata %>%
+  select(ahiTotal,
+         cesdTotal,
+         age,
+         educ,
+         income)
+
+# Create a correlation matrix
+corr <- round(cor(corr_subset), 1)
+head(corr)
+
+# Compute a matrix of p-values (for correlations)
+p.mat <- cor_pmat(corr_subset)
+
+# Visualize the matrix
+## Boxes
+ggcorrplot(corr)
+
+## Fined tuned
+ggcorrplot(corr, 
+           method = "circle",
+           hc.order = TRUE, 
+           type = "lower",
+           outline.col = "white",
+           ggtheme = ggplot2::theme_minimal,
+           colors = c("#6D9EC1", "white", "#E46726"))
+```
+
+
+# Comparing means
+
+## t-test
+
+There are three different kinds of t-test: the one sample test, the independent samples test (Student’s and Welch’s), and the paired samples test. R allows you to run all three by specific different arguments in the `t.test` function.
+
+```{r, echo = TRUE, eval = TRUE}
+# One sample t-test
+t.test(x = summarydata$ahiTotal, mu = 70)
+
+# Two sample t-test
+t.test(formula = ahiTotal ~ sex, data = summarydata)
+
+## Find Cohen´s d
+library(psych)
+cohen.d(x = summarydata$ahiTotal, group = summarydata$sex)
+```
+
+```{r, echo = TRUE, eval = FALSE}
+# Paired samples t-test (example)
+t.test(x = data$t1, y = data$t2, paired = TRUE)
+```
+
+## Checking the normality of a sample
+
+All of the tests that we have discussed so far have assumed that the data are normally distributed, or at least close enough to normal that you can get away with using t-tests. Okay, so if normality is assumed by all the tests, and is mostly but not always satisfied (at least approximately) by real world data, how can we check the normality of a sample?
+
+### Q-Q-Plots
+To draw a Q-Q-Plot to check normality of your sample distribution, you can use the `qqnorm` function.
+
+```{r, echo = TRUE, eval = TRUE}
+qqnorm(y = summarydata$ahiTotal) 
+```
+
+### Shapiro-Wilk test
+Although Q-Q-plots provide a nice way to informally check the normality of your data, sometimes you’ll want to do something a bit more formal. And when that moment comes, the Shapiro-Wilk test is probably what you’re looking for. As you’d expect, the null hypothesis being tested is that a set of $N$ observations is normally distributed.
+
+```{r, echo = TRUE, eval = TRUE}
+shapiro.test(x = summarydata$ahiTotal)
+```
+
+Fortunately, at least for me, as I now have to(!) introduce a non-parametric alternative, we find evidence that the distribution in our sample indeed deviates from normality. So what can we do?
+
+### Two sample Wilcoxon test
+
+```{r, echo = TRUE, eval = TRUE}
+# One sample
+wilcox.test(x = summarydata$ahiTotal, mu = 70)
+
+# Two samples
+wilcox.test(formula = ahiTotal ~ sex, data = summarydata)
+```
+
+```{r, echo = TRUE, eval = FALSE}
+# Paired samples (example)
+wilcox.test(x = data$t1, y = data$t2, paired = TRUE)
+```
+

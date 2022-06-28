@@ -60,6 +60,7 @@ Create a new RMarkdown file in your project folder. Change all the setting in th
 * We always the date to be up-to-date: Try to replace the set date by a function we have used before (hint: your computer like to tell you)
 
 * Add the following options to the YAML-header
+
 ```{r, echo = TRUE, eval = FALSE}
 output: 
   bookdown::html_document2:
@@ -68,6 +69,7 @@ output:
 ```
 
 * Add a new headline to the RMarkdown file (indicated by the `#`) and copy and paste the following code beneath (set `eval =` to `TRUE`)
+
 ```{r, echo = TRUE, eval = FALSE}
 set.seed(12042016)
 norm_distb <- rnorm(n = 600, mean = 10, sd = 2)
@@ -89,4 +91,6 @@ Is part of the introductory post on grammar of ggplot2.
 ## Activity 7
 Is part of the introductory post on grammar of ggplot2.
 
-## Acitivity 8
+## Activity 8
+
+

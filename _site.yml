@@ -56,10 +56,8 @@ navbar:
     - text: "Analysis"
       href: analysis.html
       menu:
-        - text: "Basics: Parametric"
-          href: analysis_basics_par.html
-        - text: "Basics: Non-Parametric"
-          href: analysis_basics_nonpar.html
+        - text: "Basics"
+          href: analysis_basics.html
         - text: "Regression stories"
           href: analysis_regression.html
         - text: "Multilevel modelling"
