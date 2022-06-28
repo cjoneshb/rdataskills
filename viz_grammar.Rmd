@@ -36,7 +36,14 @@ all_dat <- inner_join(x = dat,                      # the first table you want t
                       by = c("id", "intervention")) # columns the two tables have in common
 
 summarydata <- select(.data = all_dat, 
-                      ahiTotal, cesdTotal, sex, age, educ, income, occasion,elapsed.days)
+                      ahiTotal, 
+                      cesdTotal, 
+                      sex, 
+                      age, 
+                      educ, 
+                      income, 
+                      occasion,
+                      elapsed.days)
 ```
 
 Before we go any further we need to perform an additional step of data processing that we have glossed over up until this point. First, run the below code to look at the structure of the dataset:
