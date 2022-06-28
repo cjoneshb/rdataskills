@@ -2233,7 +2233,14 @@ replication study, we´ll quickly re-run import,
                       by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"id"</span>, <span class='st'>"intervention"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># columns the two tables have in common</span>
 
 <span class='va'>summarydata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span>.data <span class='op'>=</span> <span class='va'>all_dat</span>, 
-                      <span class='va'>ahiTotal</span>, <span class='va'>cesdTotal</span>, <span class='va'>sex</span>, <span class='va'>age</span>, <span class='va'>educ</span>, <span class='va'>income</span>, <span class='va'>occasion</span>,<span class='va'>elapsed.days</span><span class='op'>)</span>
+                      <span class='va'>ahiTotal</span>, 
+                      <span class='va'>cesdTotal</span>, 
+                      <span class='va'>sex</span>, 
+                      <span class='va'>age</span>, 
+                      <span class='va'>educ</span>, 
+                      <span class='va'>income</span>, 
+                      <span class='va'>occasion</span>,
+                      <span class='va'>elapsed.days</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -2304,7 +2311,7 @@ specify this.</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>summarydata</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>sex</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>summarydata</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>sex</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="viz_grammar_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
@@ -2380,7 +2387,7 @@ axis labels and change the numeric sex codes into words.</p>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>summarydata</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>sex</span>, fill <span class='op'>=</span> <span class='va'>sex</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>show.legend <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Participant Sex"</span>, 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Participant Sex"</span>,
                    labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Female"</span>, <span class='st'>"Male"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Number of participants"</span><span class='op'>)</span>
 </code></pre>
@@ -2483,6 +2490,7 @@ happens.</p></li>
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>summarydata</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>income</span>, y <span class='op'>=</span> <span class='va'>ahiTotal</span>, fill <span class='op'>=</span> <span class='va'>income</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_violin.html'>geom_violin</a></span><span class='op'>(</span>trim <span class='op'>=</span> <span class='cn'>FALSE</span>, show.legend <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>.4</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_boxplot.html'>geom_boxplot</a></span><span class='op'>(</span>width <span class='op'>=</span> <span class='fl'>.2</span>, show.legend <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>.7</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_jitter.html'>geom_jitter</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Income"</span>,
                    labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Below Average"</span>, <span class='st'>"Average"</span>, <span class='st'>"Above Average"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Authentic Happiness Inventory Score"</span><span class='op'>)</span><span class='op'>+</span>

@@ -78,7 +78,7 @@ For our first example we will recreate the bar plot showing the number of male a
 * `aes()` can take both an `x` and `y` argument, however, with a bar plot you are just asking R to count the number of data points in each group so you don't need to specify this.
 
 ```{r, echo = TRUE, eval = TRUE}
-ggplot(summarydata, aes(x = sex))
+ggplot(data = summarydata, aes(x = sex))
 ```
 
 * The next layer adds a `geom` or a `shape`, in this case we use `geom_bar()` as we want to draw a bar plot.
@@ -123,7 +123,7 @@ There are lots more ways you can customise your axes but we'll stick with these 
 ```{r, echo = TRUE, eval = TRUE}
 ggplot(summarydata, aes(x = sex, fill = sex)) +
   geom_bar(show.legend = FALSE) +
-  scale_x_discrete(name = "Participant Sex", 
+  scale_x_discrete(name = "Participant Sex",
                    labels = c("Female", "Male")) +
   scale_y_continuous(name = "Number of participants")
 ```
@@ -192,6 +192,7 @@ Violin plots are a nice way to visualize distributions, and potentially include 
 ggplot(summarydata, aes(x = income, y = ahiTotal, fill = income)) +
   geom_violin(trim = FALSE, show.legend = FALSE, alpha = .4) +
   geom_boxplot(width = .2, show.legend = FALSE, alpha = .7)+
+  geom_jitter() +
   scale_x_discrete(name = "Income",
                    labels = c("Below Average", "Average", "Above Average")) +
   scale_y_continuous(name = "Authentic Happiness Inventory Score")+
