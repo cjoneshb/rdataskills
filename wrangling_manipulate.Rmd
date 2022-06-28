@@ -83,7 +83,10 @@ If we wanted to create a dataset that only includes certain variables, we can us
 
 ```{r, echo = TRUE, eval = FALSE}
 select(.data = babynames,     # the object you want to select variables from
-       year, sex, name, prop) # the variables you want to select
+       year, 
+       sex, 
+       name, 
+       prop) # the variables you want to select
 ```
 
 If you get an error message when using select that says unused argument it means that it is trying to use the wrong version of the `select()` function. There are two solutions to this, first, save you work and then restart the R session (click session -restart R) and then run all your code above again from the start, or replace select with `dplyr::select()` which tells R exactly which version of the select function to use. I'd recommend restarting the session because this will get you in the habit and it's a useful thing to try for a range of problems
@@ -112,7 +115,7 @@ arrange(.data = babynames, # the data you want to sort
 The data are now sorted in ascending alphabetical order by name. The default is to sort in ascending order. If you want it descending, wrap the name of the variable in the `desc()` function. For instance, to sort by year in descending order, run the following code:
 
 ```{r, echo = TRUE, eval = FALSE}
-arrange(babynames,desc(year)) 
+arrange(babynames, desc(year)) 
 ```
 
 You can also sort by more than one column. What do you think the following code will do?
@@ -162,7 +165,7 @@ filter(babynames, name == "Mary")
 If you wanted all the names except Mary, you use the *'not equals' operator*:
 
 ```{r, echo = TRUE, eval = FALSE}
-filter(babynames, name!="Mary") 
+filter(babynames, name != "Mary") 
 ```
 
 And if you wanted names from a defined set - e.g., names of British queens - you can use `%in%`:
@@ -275,7 +278,11 @@ Not only do I really like these visuals, but I think they do a very good job of 
 Now, the below code does exactly the same as all the code we wrote above but it only creates one object.
 
 ```{r, echo = TRUE, eval = TRUE}
-pipe_summary <- mutate(babynames, decade = floor(year/10) *10) %>%
+pipe_summary  
+  
+  
+babyn %>%
+  mutate(decade = floor(year/10) *10) %>%
   filter(name %in% c("Emily","Kathleen","Alexandra","Beverly"), sex=="F") %>%
   group_by(name, decade) %>%
   summarise(mean_decade = mean(n))
@@ -341,8 +348,11 @@ In this case, the file contains the responses to each individual question on bot
 To do this we use the `select()` function to create a new object named summarydata.
 
 ```{r, echo = TRUE, eval = TRUE}
-summarydata <- select(.data = all_dat, # name of the object to take data from
-                      ahiTotal, cesdTotal, sex, age, educ, income, occasion,elapsed.days)
+summarydata <- all_dat %>% 
+  select(ahiTotal, 
+         cesdTotal, 
+         sex, 
+         age, educ, income, occasion,elapsed.days, intervention)
 ```
 
 If you get an error message when using `select` that says `unused argument` it means that it is trying to use the wrong version of the `select` function. There are two solutions to this, first, save you work and then restart the R session (click session `-restart R`) and then run all your code above again from the start, or replace select with `dplyr::select` which tells R exactly which version of the `select` function to use. We'd recommend restarting the session because this will get you in the habit and it's a useful thing to try for a range of problems

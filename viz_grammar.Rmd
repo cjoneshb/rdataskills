@@ -304,6 +304,17 @@ ggplot(summarydata, aes(x = ahiTotal , y = cesdTotal, colour = happiness)) +
                        option = "E")
 ```
 
+# Activity 8:
+
+Now, to learn to adapt your skills to a new task / typ of plot, please...
+
+* Go to this [website](https://www.data-to-viz.com) and pick a more "creative" plotting approach
+
+* Select variable(s) from the four datasets to recreate the plot
+
+* Which of the functions, arguments etc used until now have you re-used? Which new ones did you learn / explore?
+
+
 # Developing plots (and questions)
 
 A big advantage of ggplot2 over Base R plotting functions is the relative ease you can developing your plotting approach with. It´s fairly easy to add or change smaller details or provide additional depth of analysis within just a few lines of code.
