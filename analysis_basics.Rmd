@@ -210,3 +210,27 @@ wilcox.test(formula = ahiTotal ~ sex, data = summarydata)
 wilcox.test(x = data$t1, y = data$t2, paired = TRUE)
 ```
 
+# ANOVA
+
+```{r, echo = TRUE, eval = TRUE}
+library("afex")
+library(emmeans)
+
+# Subset dat to occasion "0"
+dat_anova <- dat %>%
+  filter(occasion == 0)
+```
+
+```{r, echo = TRUE, eval = TRUE}
+e1_anova <- aov_ez(
+  id = "id", 
+  dv = "ahiTotal", 
+  between = "intervention",
+  data = dat_anova)
+
+summary(e1_anova)
+
+emmeans(e1_anova, "intervention")
+
+afex_plot(e1_anova, "intervention")
+```
