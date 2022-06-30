@@ -104,7 +104,8 @@ Up to this point we have focused entirely on how to construct descriptive statis
 ### Pearson´s correlation coefficient
 
 ```{r, echo = TRUE, eval = TRUE}
-cor.test(x = summarydata$ahiTotal, y = summarydata$cesdTotal, method = 'pearson')
+correlation_p <- cor.test(x = summarydata$ahiTotal, y = summarydata$cesdTotal, method = 'pearson')
+correlation_p
 ```
 
 ### Spearman´s rank correlations
@@ -213,7 +214,7 @@ wilcox.test(x = data$t1, y = data$t2, paired = TRUE)
 # ANOVA
 
 ```{r, echo = TRUE, eval = TRUE}
-library("afex")
+library(afex)
 library(emmeans)
 
 # Subset dat to occasion "0"

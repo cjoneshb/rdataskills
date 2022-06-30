@@ -1,5 +1,5 @@
 ---
-title: "Soon"
+title: "Regression stories"
 description: |
   fostering R data skills for health science
 toc: TRUE
@@ -7,12 +7,392 @@ toc_float: TRUE
 site: distill::distill_website
 ---
 
-# ... not yet there
-  
-This page is still under construction. May take some time...
+```{r, echo = FALSE, eval = TRUE}
+library(tidyverse)
+library(readr)
+```
 
-BER picture
+# Linear Regression
+
+In this first paragraph I will introduce linear regression, the standard tool that statisticians rely on when analyzing the relationship between interval scale predictors and interval scale outcomes. Stripped to its bare essentials, linear regression models are basically a slightly fancier version of the Pearson correlation.
+
+We are going to analyze data from the *positive psychology intervention* study (or rather its replication). We will start with the association of depression and happiness total scores at baseline. Later, we will then also include age, income and sex as predictors.
+
+```{r, echo = TRUE, eval = TRUE}
+dat <- read_csv ("datasets/positive_psychology/ahi-cesd.csv") # import intervention data
+pinfo <- read_csv("datasets/positive_psychology/participant-info.csv") # import participant data
+
+all_dat <- inner_join(x = dat,                      # the first table you want to join
+                      y = pinfo,                    # the second table you want to join
+                      by = c("id", "intervention")) # columns the two tables have in common
+
+summarydata <- all_dat %>%
+  filter(occasion == 0) %>%
+  select(id, intervention, ahiTotal, cesdTotal, sex, age, educ, income)
+```
+
+After importing, joining and subsetting the data, let´s plot the two key variables of interest: happiness and depression total scores (for the subequent analysis, we will focus on depression as our outcome).
+
+## Plotting
+```{r, echo = TRUE, eval = TRUE}
+ggplot(summarydata, aes(x = ahiTotal , y = cesdTotal)) + 
+  geom_point(colour = "red") +
+  scale_x_continuous(name = "Happiness Score") +
+  scale_y_continuous(name = "Depression Score",
+                     limits = c(0,60)) +
+  geom_smooth(method = "lm") +
+  theme_minimal()
+```
+
+## Table
+
+It is also useful to calculate descriptives statistics for the sample overall so that you can check that the sample scores are what you were expecting (e.g., are they comparable to previous studies and samples?). This is also useful for the write-up.
+For this purpose, I use the `summarise` function again.
+
+```{r, echo = TRUE, eval = TRUE}
+descriptives <- summarydata %>%
+  summarise(mean_happy = mean(ahiTotal, na.rm = TRUE),
+            sd_happy = sd(ahiTotal, na.rm = TRUE),
+            mean_depressed = mean(cesdTotal, na.rm = TRUE),
+            sd_depressed = sd(cesdTotal, na.rm = TRUE))
+
+# Load psych-package and use describe function to create a dataframe with key descriptives per column
+library(psych)
+descriptives2 <- describe(summarydata)
+descriptives2
+```
+
+As you can see, the describe function gives us a very good and easy-to-achieve tabular overview of key descriptives. We will refine this table and plot it as an html-file.
+
+```{r, echo = TRUE, eval = TRUE}
+# 
+descr_table_data <- descriptives2 %>%
+  select(mean, trimmed, sd, median, min, max, skew, kurtosis) 
+
+# Cut first two rows: ID, Intervention type
+descr_table_data <- descr_table_data[-c(1:2),]
+
+# Rename rows
+row.names(descr_table_data) <- c("Happiness", "Depression", "Sex", "Age", "Education", "Income")
+
+# Load kableExtra package and create striped table
+library(kableExtra)
+kbl(descr_table_data, 
+    digits = 2, 
+    caption = "Infamous Table 1.",
+    col.names = c("Mean", "Trimmed", "SD", "Median", "Min", "Max", "Skewness", "Kurtosis")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Estimate model
+
+As we now have a pretty good overview of different relevant descriptives and distribution properties, we can now get to work and estimate the linear regression model.
+
+```{r, echo = TRUE, eval = TRUE}
+# Estimate model
+linear_model_depr <- lm(cesdTotal ~ ahiTotal, summarydata)
+
+# Check model output
+linear_model_depr_summary <- summary(linear_model_depr)
+linear_model_depr_summary
+```
+
+Interpretation
+
+## Assumptions / power / performance
+
+You can't check the assumptions until you've run the regression so now we'll do that to check whether there's anything to be concerned about. As we covered in the lecture, the assumptions for regression are:
+
+* The outcome/DV is a interval/ratio level data
+
+* All values of the outcome variable are independent (i.e., each score should come from a different participant)
+
+* The predictors have non-zero variance
+
+* The relationship between outcome and predictor is linear
+
+* The *residuals* should be normally distributed
+
+* There should be homoscedasticity (homogeneity of variance, but for the residuals)
+
+Assumptions 1-3 are nice and easy. We know this from the data we have and the design of the study. Assumption 4 simply means that there is some spread in the data - for example, there's no point running a regression with age as a variable if all your participants are 20 years old.
+
+For the rest of the assumptions, we're going to use functions from the packages `see` and `performance` that make life a whole lot easier.
+
+```{r, echo = TRUE, eval = TRUE}
+library(performance)
+library(see)
+
+# Test model assumptions
+check_model(linear_model_depr)
+
+## Test normality of residuals
+check_normality(linear_model_depr)
+
+## Test homoscedasticity (we need to use the heteroscedasticity function)
+check_heteroscedasticity(linear_model_depr)
+```
+
+After testing (and not meeting) these assumptions, we should also have a look at the model performance (the `model_performance` function can be used for different models to provide different indicators) and calculate the minimum effect size we were able to detect given the sample size and design of the study using `pwr.f2.test()`. I´ll showcase a different approach with a different set of functions after estimating a logistic regression model in the next paragraph - please feel free to try out which of these functions suit *your workflow* best.
+
+```{r, echo = TRUE, eval = TRUE}
+# Test model performance
+model_performance(linear_model_depr)
+
+# Power and effect size
+library(pwr)
+pwr.f2.test(u = 1, v = 293, f2 = NULL, sig.level = .05, power = .8)
+```
 
 
+So what arguments do you specify for the `pwr.f2.test()` function?  
 
+* `u` - Numerator degrees of freedom. This the number of coefficients you have in your model (minus the intercept) 
 
+* `v` - Denominator degrees of freedom. This is calculated as v=n-u-1, where n is the number of participants 
+
+* `f2` - The effect size - here we are solving the effect size, so this parameter is left as NULL 
+
+* `sig.level` - The significance level of your study power - The power level of your study
+
+But now we are still missing the observed $f^{2}$. As (at least to my knowledge) no function exists to calculate the observed $f^{2}$, we the following formula and objects from the model summary.
+
+```{r, echo = TRUE, eval = TRUE}
+# Calculate the observed f2
+f2_observed <- linear_model_depr_summary$adj.r.squared/(1 - linear_model_depr_summary$adj.r.squared)
+f2_observed
+```
+
+## Reproducible reporting
+
+If you would then like to report your findings, you might as well use RMarkdown to create a reproducible results section, e.g.:
+
+"A simple linear regression model was estimated with the CESD total score (M = `r descriptives2$mean[4] %>% round(2)`, SD = `r descriptives2$sd[4] %>% round(2)`) as the outcome variable and the AHI total score (M = `r descriptives2$mean[3] %>% round(2)`, SD = `r descriptives2$sd[3] %>% round(2)`) as the predictor variable. The results of the regression indicated that the model significantly predicted depressive symptoms (F(`r linear_model_depr_summary$fstatistic[2]`, `r linear_model_depr_summary$fstatistic[3]`) = `r linear_model_depr_summary$fstatistic[1] %>% round(2)`, p < .001, Adjusted R2 = `r linear_model_depr_summary$adj.r.squared %>% round(2)`, $f^{2}$ = `r f2_observed %>% round(2)`), accounting for `r (linear_model_depr_summary$adj.r.squared %>% round(2))*100`% of the variance. Happiness was a significant predictor (β = `r linear_model_depr$coefficients[2] %>% round(2)`, p < .001.
+)"
+
+## Table
+
+There are several nice packages to produce results tables as `html`. I like to work with the `sjPlot` package as it offers a range of arguments to further customize and refine the table to your needs.
+
+```{r, echo = TRUE, eval = TRUE}
+library(sjPlot)
+
+# Create table
+tab_model(linear_model_depr,
+          pred.labels = c("Intercept","AHI Score"),
+          dv.labels = "CESD Score")
+```
+
+## Multiple linear regression
+
+For our first and more elaborate example, we only used one predictor variable. In most cases, however, we are interested in the association of more than one predictor with the outcome. Luckily, you can just add them to the formula we used above and continue from there.  
+
+```{r, echo = TRUE, eval = TRUE}
+# Estimate model
+linear_model_depr_multi <- lm(cesdTotal ~ ahiTotal + income + sex + educ, summarydata)
+
+# Check model output
+linear_model_depr_multi_summary <- summary(linear_model_depr_multi)
+linear_model_depr_multi_summary
+```
+
+Although most of the aspects covered above also apply for linear regression models with multiple predictors, you might consider plotting your results by using the `plot_model` function.
+
+```{r, echo = TRUE, eval = TRUE}
+# Plot model results
+plot_model(linear_model_depr_multi,
+           title = "Estimate Plot: CESD Score",
+           axis.labels = c("Education", "Sex", "Income", "AHI Score")) + 
+  theme_minimal()
+
+```
+
+Additionally, you will have to pay some attention to potential issues of multi-collinearity (can be tested within the `check_model` function).
+
+# Logistic Regression
+
+Logistic regression is an extension / a special case of the (generalized) linear model, where the variable being predicted is categorical. We will focus on binary logistic regression, where the dependent variable has two levels, e.g., yes or no, 0 or 1, dead or alive. Other types of logistic regression include ‘ordinal’, when the outcome variable has >2 ordered levels, and ‘multinomial’, where the outcome variable has >2 levels with no inherent order.
+
+We will only deal with binary logistic regression. When we use the term ‘logistic regression’, that is what we are referring to.
+
+We have good reason. In healthcare we are often interested in an event (like death) occurring or not occurring. Binary logistic regression can tell us the probability of this outcome occurring in a patient with a particular set of characteristics.
+
+Although in binary logistic regression the outcome must have two levels, remember that the predictors can be either continuous or categorical.
+
+```{r, echo = TRUE, eval = TRUE}
+library(readxl)
+
+# Import data
+surgery_dat <- read_excel ("datasets/surgery_timing/surgerytiming.xlsx") # import surgery data
+
+# Define complication column as factor
+surgery_dat$complication <- factor(surgery_dat$complication, levels=c("0","1"), labels=c("No","Yes")) 
+
+# Filter for complete cases (at least for model relevant columns)
+surgery_dat <- surgery_dat %>%
+  select(complication,
+         age,
+         baseline_cvd,
+         bmi,
+         hour) %>%
+  drop_na()
+```
+
+For our logistic regression model, we will use the *surgery timing* data and look at different predictors of complications during surgery.
+
+```{r, echo = TRUE, eval = TRUE}
+# Estimate model
+log_model_complication <- glm(formula = complication ~ age*baseline_cvd + bmi + hour, family = "binomial", data = surgery_dat)
+
+# Summary of results
+log_model_complication_summary <- summary(log_model_complication)
+log_model_complication_summary
+```
+
+As you might have noticed, several minor things have changed:
+
+* `glm` function is used to estimate generalized linear models (while lm function is reserved for linear regression models specifically)
+
+* `family` argument describes the error distribution and link function to be used in the model (family types are binomial, gaussian, Gamma, poisson, quasi, quasibinomial, quasipoisson)
+
+* `*` indicates an interaction term to be included in the model. While the `*` will return both predictors AND an interaction thereof to be included, so could also specify the interaction term directly with a `:`
+
+So things have changed but also got much more interesting. Let´s try to unravel some of the results we find (but only after testing our assumptions).
+
+```{r, echo = TRUE, eval = TRUE}
+# Test model assumptions
+check_model(log_model_complication)
+
+## Test heteroscedasticity
+check_heteroscedasticity(log_model_complication)
+
+## Test collinearity
+check_collinearity(log_model_complication)
+
+# Linearity assumption
+## Predict the probability (p) of complications arrising
+probabilities <- predict(log_model_complication, type = "response")
+
+## Select only numeric predictors
+lin_preds <- surgery_dat %>%
+  select(age,
+         bmi,
+         hour) 
+
+predictors_names <- colnames(lin_preds)
+
+## Bind the logit and tidy the data for plot
+lin_preds <- lin_preds %>%
+  mutate(logit = log(probabilities/(1-probabilities))) %>%
+  gather(key = "predictors", value = "predictor.value", -logit)
+
+## Plot continuous predictors and the logit of the outcome
+ggplot(lin_preds, aes(logit, predictor.value))+
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth(method = "loess") + 
+  theme_bw() + 
+  facet_wrap(~predictors, scales = "free_y")
+```
+
+As there could be some issues related to the very strong collinearity (VIFs), we have to re-check with a model without the respective interaction term (as the `performance` package already suggests):
+
+```{r, echo = TRUE, eval = TRUE}
+# Alternative model without interaction term
+log_model_complication_ni <- glm(formula = complication ~ age + bmi + hour, family = "binomial", data = surgery_dat)
+summary(log_model_complication_ni)
+
+## Test model assumptions
+check_model(log_model_complication_ni)
+
+## Test collinearity
+check_collinearity(log_model_complication_ni)
+```
+
+So this looks good and we might tend to still include the interaction term (due to a potential inflation of VIFs). However, as the coefficients change very much, I would suggest to still report both sets of analysis.
+
+## Effect size
+```{r, echo = TRUE, eval = TRUE}
+# Calculate odds ratios (ORs)
+odds_ratios <- exp(coef(log_model_complication))
+odds_ratios
+```
+
+## Plotting
+
+Instead of the coefficient plot above, we will here showcase a new package and function: `or_plot` from the `finalfit` package. Very nice!
+
+```{r, echo = TRUE, eval = TRUE, error=TRUE, warning=FALSE}
+# Calculate odds ratios (ORs)
+# load package
+library(finalfit)
+
+# Refine binary predictor
+str(surgery_dat$baseline_cvd)
+
+# Replace
+surgery_dat$baseline_cvd <- factor(surgery_dat$baseline_cvd, levels=c("0","1"), labels=c("No","Yes")) 
+
+# Define DV and IV
+dependent = "complication"
+explanatory = c("Age", "CVD", "BMI", "Time")
+
+# Create plot
+surgery_dat %>%
+  rename("Age" = "age",
+         "CVD" = "baseline_cvd",
+         "BMI" = "bmi",
+         "Time" = "hour") %>%
+  or_plot(dependent, explanatory) +
+  labs(title = "Odds of complication occuring")
+```
+
+## Table 
+
+After using a ready made function to create the results table for our linear regression model, we will now focus on higher customizability with a tidy approach using `broom`, `papaja` and `kableExtra`.
+
+```{r, echo = TRUE, eval = TRUE}
+library(broom)
+
+# Create model results dataframe
+log_table <- log_model_complication %>% 
+  tidy()
+ 
+# Add column with ORs
+log_table <- cbind(log_table, odds_ratios)
+
+# Rename rows
+row.names(log_table) <- c("Intercept","Age","CVD","BMI","Time","Age x CVD")
+
+# Label p values in line with APA standards
+library(papaja)
+log_table$p.value <- printp(as.numeric(log_table$p.value))
+
+# Create table (select columns first, then refine table options)
+log_table %>% 
+  select(estimate,
+         std.error,
+         odds_ratios,
+         p.value) %>%
+  kbl(digits = 2,
+      col.names = c("Estimate","SE","OR","p"),
+      caption = "Model Table ...") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Interaction
+
+As we cannot interpret the interaction term without plotting it, we will now use the interactions package that offers a wider range of options and very nice basic functionality.
+
+```{r, echo = TRUE, eval = TRUE}
+library(interactions)
+
+# Create plot
+interact_plot(log_model_complication,
+              pred = age,
+              modx = baseline_cvd,
+              x.label = "Age",
+              y.label = "Complication (p)",
+              legend.main = "CVD",
+              modx.labels = c("No","Yes"),
+              main.title = "Interaction plot")
+```

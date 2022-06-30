@@ -88,14 +88,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>How R You?: Soon</title>
+  <title>How R You?: Regression stories</title>
 
   <meta property="description" itemprop="description" content="fostering R data skills for health science"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="How R You?: Soon"/>
+  <meta property="og:title" content="How R You?: Regression stories"/>
   <meta property="og:type" content="article"/>
   <meta property="og:description" content="fostering R data skills for health science"/>
   <meta property="og:locale" content="en_US"/>
@@ -103,14 +103,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="How R You?: Soon"/>
+  <meta property="twitter:title" content="How R You?: Regression stories"/>
   <meta property="twitter:description" content="fostering R data skills for health science"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","toc","toc_float","site"]}},"value":[{"type":"character","attributes":{},"value":["Soon"]},{"type":"character","attributes":{},"value":["fostering R data skills for health science\n"]},{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","toc","toc_float","site"]}},"value":[{"type":"character","attributes":{},"value":["Regression stories"]},{"type":"character","attributes":{},"value":["fostering R data skills for health science\n"]},{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2068,6 +2068,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2087,7 +2089,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Soon","description":"fostering R data skills for health science","authors":[]}
+{"title":"Regression stories","description":"fostering R data skills for health science","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2184,7 +2186,7 @@ Programming
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Soon</h1>
+<h1>Regression stories</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 <p><p>fostering R data skills for health science</p></p>
@@ -2198,10 +2200,1066 @@ Programming
 
 </nav>
 </div>
-<h1 id="not-yet-there">… not yet there</h1>
-<p>This page is still under construction. May take some time…</p>
-<p>BER picture</p>
-<div class="sourceCode" id="cb1"><pre
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<h1 id="linear-regression">Linear Regression</h1>
+<p>In this first paragraph I will introduce linear regression, the
+standard tool that statisticians rely on when analyzing the relationship
+between interval scale predictors and interval scale outcomes. Stripped
+to its bare essentials, linear regression models are basically a
+slightly fancier version of the Pearson correlation.</p>
+<p>We are going to analyze data from the <em>positive psychology
+intervention</em> study (or rather its replication). We will start with
+the association of depression and happiness total scores at baseline.
+Later, we will then also include age, income and sex as predictors.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'>read_csv</span> <span class='op'>(</span><span class='st'>"datasets/positive_psychology/ahi-cesd.csv"</span><span class='op'>)</span> <span class='co'># import intervention data</span>
+<span class='va'>pinfo</span> <span class='op'>&lt;-</span> <span class='fu'>read_csv</span><span class='op'>(</span><span class='st'>"datasets/positive_psychology/participant-info.csv"</span><span class='op'>)</span> <span class='co'># import participant data</span>
+
+<span class='va'>all_dat</span> <span class='op'>&lt;-</span> <span class='fu'>inner_join</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>dat</span>,                      <span class='co'># the first table you want to join</span>
+                      y <span class='op'>=</span> <span class='va'>pinfo</span>,                    <span class='co'># the second table you want to join</span>
+                      by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"id"</span>, <span class='st'>"intervention"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># columns the two tables have in common</span>
+
+<span class='va'>summarydata</span> <span class='op'>&lt;-</span> <span class='va'>all_dat</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/stats/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>occasion</span> <span class='op'>==</span> <span class='fl'>0</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>intervention</span>, <span class='va'>ahiTotal</span>, <span class='va'>cesdTotal</span>, <span class='va'>sex</span>, <span class='va'>age</span>, <span class='va'>educ</span>, <span class='va'>income</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>After importing, joining and subsetting the data, let´s plot the two
+key variables of interest: happiness and depression total scores (for
+the subequent analysis, we will focus on depression as our outcome).</p>
+<h2 id="plotting">Plotting</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>ggplot</span><span class='op'>(</span><span class='va'>summarydata</span>, <span class='fu'>aes</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>ahiTotal</span> , y <span class='op'>=</span> <span class='va'>cesdTotal</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'>geom_point</span><span class='op'>(</span>colour <span class='op'>=</span> <span class='st'>"red"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_x_continuous</span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Happiness Score"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_y_continuous</span><span class='op'>(</span>name <span class='op'>=</span> <span class='st'>"Depression Score"</span>,
+                     limits <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>60</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>geom_smooth</span><span class='op'>(</span>method <span class='op'>=</span> <span class='st'>"lm"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>theme_minimal</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="analysis_regression_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
+</div>
+<h2 id="table">Table</h2>
+<p>It is also useful to calculate descriptives statistics for the sample
+overall so that you can check that the sample scores are what you were
+expecting (e.g., are they comparable to previous studies and samples?).
+This is also useful for the write-up. For this purpose, I use the
+<code>summarise</code> function again.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>descriptives</span> <span class='op'>&lt;-</span> <span class='va'>summarydata</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>summarise</span><span class='op'>(</span>mean_happy <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>ahiTotal</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>,
+            sd_happy <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/sd.html'>sd</a></span><span class='op'>(</span><span class='va'>ahiTotal</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>,
+            mean_depressed <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>cesdTotal</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>,
+            sd_depressed <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/sd.html'>sd</a></span><span class='op'>(</span><span class='va'>cesdTotal</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='co'># Load psych-package and use describe function to create a dataframe with key descriptives per column</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://personality-project.org/r/psych/'>psych</a></span><span class='op'>)</span>
+<span class='va'>descriptives2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/psych/man/describe.html'>describe</a></span><span class='op'>(</span><span class='va'>summarydata</span><span class='op'>)</span>
+<span class='va'>descriptives2</span>
+</code></pre>
+</div>
+<pre><code>             vars   n   mean    sd median trimmed    mad min max
+id              1 295 148.00 85.30    148  148.00 109.71   1 295
+intervention    2 295   2.50  1.11      2    2.50   1.48   1   4
+ahiTotal        3 295  69.71 13.17     69   69.73  14.83  35 106
+cesdTotal       4 295  15.06 10.80     12   14.00  10.38   0  53
+sex             5 295   1.15  0.36      1    1.06   0.00   1   2
+age             6 295  43.76 12.43     44   43.57  13.34  18  83
+educ            7 295   3.98  1.12      4    4.16   1.48   1   5
+income          8 295   2.04  0.73      2    2.05   1.48   1   3
+             range  skew kurtosis   se
+id             294  0.00    -1.21 4.97
+intervention     3  0.00    -1.35 0.06
+ahiTotal        71 -0.01    -0.37 0.77
+cesdTotal       53  0.85     0.10 0.63
+sex              1  1.96     1.85 0.02
+age             65  0.15    -0.52 0.72
+educ             4 -1.09     0.48 0.06
+income           2 -0.07    -1.15 0.04</code></pre>
+</div>
+<p>As you can see, the describe function gives us a very good and
+easy-to-achieve tabular overview of key descriptives. We will refine
+this table and plot it as an html-file.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># </span>
+<span class='va'>descr_table_data</span> <span class='op'>&lt;-</span> <span class='va'>descriptives2</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='va'>mean</span>, <span class='va'>trimmed</span>, <span class='va'>sd</span>, <span class='va'>median</span>, <span class='va'>min</span>, <span class='va'>max</span>, <span class='va'>skew</span>, <span class='va'>kurtosis</span><span class='op'>)</span> 
+
+<span class='co'># Cut first two rows: ID, Intervention type</span>
+<span class='va'>descr_table_data</span> <span class='op'>&lt;-</span> <span class='va'>descr_table_data</span><span class='op'>[</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>,<span class='op'>]</span>
+
+<span class='co'># Rename rows</span>
+<span class='fu'><a href='https://rdrr.io/r/base/row.names.html'>row.names</a></span><span class='op'>(</span><span class='va'>descr_table_data</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Happiness"</span>, <span class='st'>"Depression"</span>, <span class='st'>"Sex"</span>, <span class='st'>"Age"</span>, <span class='st'>"Education"</span>, <span class='st'>"Income"</span><span class='op'>)</span>
+
+<span class='co'># Load kableExtra package and create striped table</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://haozhu233.github.io/kableExtra/'>kableExtra</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/kableExtra/man/kbl.html'>kbl</a></span><span class='op'>(</span><span class='va'>descr_table_data</span>, 
+    digits <span class='op'>=</span> <span class='fl'>2</span>, 
+    caption <span class='op'>=</span> <span class='st'>"Infamous Table 1."</span>,
+    col.names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Mean"</span>, <span class='st'>"Trimmed"</span>, <span class='st'>"SD"</span>, <span class='st'>"Median"</span>, <span class='st'>"Min"</span>, <span class='st'>"Max"</span>, <span class='st'>"Skewness"</span>, <span class='st'>"Kurtosis"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/kableExtra/man/kable_styling.html'>kable_styling</a></span><span class='op'>(</span>bootstrap_options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"striped"</span>, <span class='st'>"hover"</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-5">Table 1: </span>Infamous Table 1.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Mean
+</th>
+<th style="text-align:right;">
+Trimmed
+</th>
+<th style="text-align:right;">
+SD
+</th>
+<th style="text-align:right;">
+Median
+</th>
+<th style="text-align:right;">
+Min
+</th>
+<th style="text-align:right;">
+Max
+</th>
+<th style="text-align:right;">
+Skewness
+</th>
+<th style="text-align:right;">
+Kurtosis
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Happiness
+</td>
+<td style="text-align:right;">
+69.71
+</td>
+<td style="text-align:right;">
+69.73
+</td>
+<td style="text-align:right;">
+13.17
+</td>
+<td style="text-align:right;">
+69
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+106
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+-0.37
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Depression
+</td>
+<td style="text-align:right;">
+15.06
+</td>
+<td style="text-align:right;">
+14.00
+</td>
+<td style="text-align:right;">
+10.80
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+53
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+0.10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:right;">
+1.15
+</td>
+<td style="text-align:right;">
+1.06
+</td>
+<td style="text-align:right;">
+0.36
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.96
+</td>
+<td style="text-align:right;">
+1.85
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+43.76
+</td>
+<td style="text-align:right;">
+43.57
+</td>
+<td style="text-align:right;">
+12.43
+</td>
+<td style="text-align:right;">
+44
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+83
+</td>
+<td style="text-align:right;">
+0.15
+</td>
+<td style="text-align:right;">
+-0.52
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Education
+</td>
+<td style="text-align:right;">
+3.98
+</td>
+<td style="text-align:right;">
+4.16
+</td>
+<td style="text-align:right;">
+1.12
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+-1.09
+</td>
+<td style="text-align:right;">
+0.48
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income
+</td>
+<td style="text-align:right;">
+2.04
+</td>
+<td style="text-align:right;">
+2.05
+</td>
+<td style="text-align:right;">
+0.73
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+-0.07
+</td>
+<td style="text-align:right;">
+-1.15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="estimate-model">Estimate model</h2>
+<p>As we now have a pretty good overview of different relevant
+descriptives and distribution properties, we can now get to work and
+estimate the linear regression model.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Estimate model</span>
+<span class='va'>linear_model_depr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>cesdTotal</span> <span class='op'>~</span> <span class='va'>ahiTotal</span>, <span class='va'>summarydata</span><span class='op'>)</span>
+
+<span class='co'># Check model output</span>
+<span class='va'>linear_model_depr_summary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>linear_model_depr</span><span class='op'>)</span>
+<span class='va'>linear_model_depr_summary</span>
+</code></pre>
+</div>
+<pre><code>
+Call:
+lm(formula = cesdTotal ~ ahiTotal, data = summarydata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-14.6734  -5.2682  -0.8035   5.3230  29.1891 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 56.52450    2.33846   24.17   &lt;2e-16 ***
+ahiTotal    -0.59479    0.03297  -18.04   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 7.443 on 293 degrees of freedom
+Multiple R-squared:  0.5263,    Adjusted R-squared:  0.5247 
+F-statistic: 325.5 on 1 and 293 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<p>Interpretation</p>
+<h2 id="assumptions-power-performance">Assumptions / power /
+performance</h2>
+<p>You can’t check the assumptions until you’ve run the regression so
+now we’ll do that to check whether there’s anything to be concerned
+about. As we covered in the lecture, the assumptions for regression
+are:</p>
+<ul>
+<li><p>The outcome/DV is a interval/ratio level data</p></li>
+<li><p>All values of the outcome variable are independent (i.e., each
+score should come from a different participant)</p></li>
+<li><p>The predictors have non-zero variance</p></li>
+<li><p>The relationship between outcome and predictor is linear</p></li>
+<li><p>The <em>residuals</em> should be normally distributed</p></li>
+<li><p>There should be homoscedasticity (homogeneity of variance, but
+for the residuals)</p></li>
+</ul>
+<p>Assumptions 1-3 are nice and easy. We know this from the data we have
+and the design of the study. Assumption 4 simply means that there is
+some spread in the data - for example, there’s no point running a
+regression with age as a variable if all your participants are 20 years
+old.</p>
+<p>For the rest of the assumptions, we’re going to use functions from
+the packages <code>see</code> and <code>performance</code> that make
+life a whole lot easier.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://easystats.github.io/performance/'>performance</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://easystats.github.io/see/'>see</a></span><span class='op'>)</span>
+
+<span class='co'># Test model assumptions</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_model.html'>check_model</a></span><span class='op'>(</span><span class='va'>linear_model_depr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<img src="analysis_regression_files/figure-html5/unnamed-chunk-7-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Test normality of residuals</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_normality.html'>check_normality</a></span><span class='op'>(</span><span class='va'>linear_model_depr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Warning: Non-normality of residuals detected (p &lt; .001).</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Test homoscedasticity (we need to use the heteroscedasticity function)</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_heteroscedasticity.html'>check_heteroscedasticity</a></span><span class='op'>(</span><span class='va'>linear_model_depr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Warning: Heteroscedasticity (non-constant error variance) detected (p = 0.001).</code></pre>
+</div>
+<p>After testing (and not meeting) these assumptions, we should also
+have a look at the model performance (the <code>model_performance</code>
+function can be used for different models to provide different
+indicators) and calculate the minimum effect size we were able to detect
+given the sample size and design of the study using
+<code>pwr.f2.test()</code>. I´ll showcase a different approach with a
+different set of functions after estimating a logistic regression model
+in the next paragraph - please feel free to try out which of these
+functions suit <em>your workflow</em> best.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Test model performance</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/model_performance.html'>model_performance</a></span><span class='op'>(</span><span class='va'>linear_model_depr</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># Indices of model performance
+
+AIC      |      BIC |    R2 | R2 (adj.) |  RMSE | Sigma
+-------------------------------------------------------
+2025.450 | 2036.511 | 0.526 |     0.525 | 7.418 | 7.443</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Power and effect size</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/heliosdrm/pwr'>pwr</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/pwr/man/pwr.f2.test.html'>pwr.f2.test</a></span><span class='op'>(</span>u <span class='op'>=</span> <span class='fl'>1</span>, v <span class='op'>=</span> <span class='fl'>293</span>, f2 <span class='op'>=</span> <span class='cn'>NULL</span>, sig.level <span class='op'>=</span> <span class='fl'>.05</span>, power <span class='op'>=</span> <span class='fl'>.8</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+     Multiple regression power calculation 
+
+              u = 1
+              v = 293
+             f2 = 0.02677854
+      sig.level = 0.05
+          power = 0.8</code></pre>
+</div>
+<p>So what arguments do you specify for the <code>pwr.f2.test()</code>
+function?</p>
+<ul>
+<li><p><code>u</code> - Numerator degrees of freedom. This the number of
+coefficients you have in your model (minus the intercept)</p></li>
+<li><p><code>v</code> - Denominator degrees of freedom. This is
+calculated as v=n-u-1, where n is the number of participants</p></li>
+<li><p><code>f2</code> - The effect size - here we are solving the
+effect size, so this parameter is left as NULL</p></li>
+<li><p><code>sig.level</code> - The significance level of your study
+power - The power level of your study</p></li>
+</ul>
+<p>But now we are still missing the observed <span
+class="math inline">\(f^{2}\)</span>. As (at least to my knowledge) no
+function exists to calculate the observed <span
+class="math inline">\(f^{2}\)</span>, we the following formula and
+objects from the model summary.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Calculate the observed f2</span>
+<span class='va'>f2_observed</span> <span class='op'>&lt;-</span> <span class='va'>linear_model_depr_summary</span><span class='op'>$</span><span class='va'>adj.r.squared</span><span class='op'>/</span><span class='op'>(</span><span class='fl'>1</span> <span class='op'>-</span> <span class='va'>linear_model_depr_summary</span><span class='op'>$</span><span class='va'>adj.r.squared</span><span class='op'>)</span>
+<span class='va'>f2_observed</span>
+</code></pre>
+</div>
+<pre><code>[1] 1.103802</code></pre>
+</div>
+<h2 id="reproducible-reporting">Reproducible reporting</h2>
+<p>If you would then like to report your findings, you might as well use
+RMarkdown to create a reproducible results section, e.g.:</p>
+<p>“A simple linear regression model was estimated with the CESD total
+score (M = 15.06, SD = 10.8) as the outcome variable and the AHI total
+score (M = 69.71, SD = 13.17) as the predictor variable. The results of
+the regression indicated that the model significantly predicted
+depressive symptoms (F(1, 293) = 325.52, p &lt; .001, Adjusted R2 =
+0.52, <span class="math inline">\(f^{2}\)</span> = 1.1), accounting for
+52% of the variance. Happiness was a significant predictor (β = -0.59, p
+&lt; .001. )”</p>
+<h2 id="table-1">Table</h2>
+<p>There are several nice packages to produce results tables as
+<code>html</code>. I like to work with the <code>sjPlot</code> package
+as it offers a range of arguments to further customize and refine the
+table to your needs.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://strengejacke.github.io/sjPlot/'>sjPlot</a></span><span class='op'>)</span>
+
+<span class='co'># Create table</span>
+<span class='fu'><a href='https://strengejacke.github.io/sjPlot/reference/tab_model.html'>tab_model</a></span><span class='op'>(</span><span class='va'>linear_model_depr</span>,
+          pred.labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Intercept"</span>,<span class='st'>"AHI Score"</span><span class='op'>)</span>,
+          dv.labels <span class='op'>=</span> <span class='st'>"CESD Score"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<table style="border-collapse:collapse; border:none;">
+<tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
+ 
+</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+CESD Score
+</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
+Predictors
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Estimates
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+CI
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+p
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Intercept
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+56.52
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+51.92 – 61.13
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+AHI Score
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.59
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.66 – -0.53
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">
+295
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+R<sup>2</sup> / R<sup>2</sup> adjusted
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">
+0.526 / 0.525
+</td>
+</tr>
+</table>
+</div>
+<h2 id="multiple-linear-regression">Multiple linear regression</h2>
+<p>For our first and more elaborate example, we only used one predictor
+variable. In most cases, however, we are interested in the association
+of more than one predictor with the outcome. Luckily, you can just add
+them to the formula we used above and continue from there.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Estimate model</span>
+<span class='va'>linear_model_depr_multi</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>cesdTotal</span> <span class='op'>~</span> <span class='va'>ahiTotal</span> <span class='op'>+</span> <span class='va'>income</span> <span class='op'>+</span> <span class='va'>sex</span> <span class='op'>+</span> <span class='va'>educ</span>, <span class='va'>summarydata</span><span class='op'>)</span>
+
+<span class='co'># Check model output</span>
+<span class='va'>linear_model_depr_multi_summary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>linear_model_depr_multi</span><span class='op'>)</span>
+<span class='va'>linear_model_depr_multi_summary</span>
+</code></pre>
+</div>
+<pre><code>
+Call:
+lm(formula = cesdTotal ~ ahiTotal + income + sex + educ, data = summarydata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-14.6549  -5.5549  -0.6427   5.1816  29.1593 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  55.8097     3.0907  18.057   &lt;2e-16 ***
+ahiTotal     -0.5923     0.0334 -17.733   &lt;2e-16 ***
+income       -0.2746     0.6107  -0.450    0.653    
+sex           1.4604     1.2192   1.198    0.232    
+educ         -0.1442     0.4020  -0.359    0.720    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 7.457 on 290 degrees of freedom
+Multiple R-squared:  0.5293,    Adjusted R-squared:  0.5228 
+F-statistic: 81.54 on 4 and 290 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<p>Although most of the aspects covered above also apply for linear
+regression models with multiple predictors, you might consider plotting
+your results by using the <code>plot_model</code> function.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Plot model results</span>
+<span class='fu'><a href='https://strengejacke.github.io/sjPlot/reference/plot_model.html'>plot_model</a></span><span class='op'>(</span><span class='va'>linear_model_depr_multi</span>,
+           title <span class='op'>=</span> <span class='st'>"Estimate Plot: CESD Score"</span>,
+           axis.labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Education"</span>, <span class='st'>"Sex"</span>, <span class='st'>"Income"</span>, <span class='st'>"AHI Score"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'>theme_minimal</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="analysis_regression_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
+</div>
+<p>Additionally, you will have to pay some attention to potential issues
+of multi-collinearity (can be tested within the <code>check_model</code>
+function).</p>
+<h1 id="logistic-regression">Logistic Regression</h1>
+<p>Logistic regression is an extension / a special case of the
+(generalized) linear model, where the variable being predicted is
+categorical. We will focus on binary logistic regression, where the
+dependent variable has two levels, e.g., yes or no, 0 or 1, dead or
+alive. Other types of logistic regression include ‘ordinal’, when the
+outcome variable has &gt;2 ordered levels, and ‘multinomial’, where the
+outcome variable has &gt;2 levels with no inherent order.</p>
+<p>We will only deal with binary logistic regression. When we use the
+term ‘logistic regression’, that is what we are referring to.</p>
+<p>We have good reason. In healthcare we are often interested in an
+event (like death) occurring or not occurring. Binary logistic
+regression can tell us the probability of this outcome occurring in a
+patient with a particular set of characteristics.</p>
+<p>Although in binary logistic regression the outcome must have two
+levels, remember that the predictors can be either continuous or
+categorical.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://readxl.tidyverse.org'>readxl</a></span><span class='op'>)</span>
+
+<span class='co'># Import data</span>
+<span class='va'>surgery_dat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readxl.tidyverse.org/reference/read_excel.html'>read_excel</a></span> <span class='op'>(</span><span class='st'>"datasets/surgery_timing/surgerytiming.xlsx"</span><span class='op'>)</span> <span class='co'># import surgery data</span>
+
+<span class='co'># Define complication column as factor</span>
+<span class='va'>surgery_dat</span><span class='op'>$</span><span class='va'>complication</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>surgery_dat</span><span class='op'>$</span><span class='va'>complication</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"0"</span>,<span class='st'>"1"</span><span class='op'>)</span>, labels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"No"</span>,<span class='st'>"Yes"</span><span class='op'>)</span><span class='op'>)</span> 
+
+<span class='co'># Filter for complete cases (at least for model relevant columns)</span>
+<span class='va'>surgery_dat</span> <span class='op'>&lt;-</span> <span class='va'>surgery_dat</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='va'>complication</span>,
+         <span class='va'>age</span>,
+         <span class='va'>baseline_cvd</span>,
+         <span class='va'>bmi</span>,
+         <span class='va'>hour</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>drop_na</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>For our logistic regression model, we will use the <em>surgery
+timing</em> data and look at different predictors of complications
+during surgery.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Estimate model</span>
+<span class='va'>log_model_complication</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>complication</span> <span class='op'>~</span> <span class='va'>age</span><span class='op'>*</span><span class='va'>baseline_cvd</span> <span class='op'>+</span> <span class='va'>bmi</span> <span class='op'>+</span> <span class='va'>hour</span>, family <span class='op'>=</span> <span class='st'>"binomial"</span>, data <span class='op'>=</span> <span class='va'>surgery_dat</span><span class='op'>)</span>
+
+<span class='co'># Summary of results</span>
+<span class='va'>log_model_complication_summary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>log_model_complication</span><span class='op'>)</span>
+<span class='va'>log_model_complication_summary</span>
+</code></pre>
+</div>
+<pre><code>
+Call:
+glm(formula = complication ~ age * baseline_cvd + bmi + hour, 
+    family = &quot;binomial&quot;, data = surgery_dat)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-0.6961  -0.5584  -0.5299  -0.4765   2.3095  
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)      -2.732283   0.136409 -20.030  &lt; 2e-16 ***
+age               0.014176   0.001801   7.872 3.49e-15 ***
+baseline_cvd      0.596736   0.166512   3.584 0.000339 ***
+bmi              -0.005650   0.002578  -2.192 0.028387 *  
+hour              0.017291   0.005933   2.914 0.003566 ** 
+age:baseline_cvd -0.008990   0.002693  -3.338 0.000844 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 22461  on 28708  degrees of freedom
+Residual deviance: 22350  on 28703  degrees of freedom
+AIC: 22362
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<p>As you might have noticed, several minor things have changed:</p>
+<ul>
+<li><p><code>glm</code> function is used to estimate generalized linear
+models (while lm function is reserved for linear regression models
+specifically)</p></li>
+<li><p><code>family</code> argument describes the error distribution and
+link function to be used in the model (family types are binomial,
+gaussian, Gamma, poisson, quasi, quasibinomial, quasipoisson)</p></li>
+<li><p><code>*</code> indicates an interaction term to be included in
+the model. While the <code>*</code> will return both predictors AND an
+interaction thereof to be included, so could also specify the
+interaction term directly with a <code>:</code></p></li>
+</ul>
+<p>So things have changed but also got much more interesting. Let´s try
+to unravel some of the results we find (but only after testing our
+assumptions).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Test model assumptions</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_model.html'>check_model</a></span><span class='op'>(</span><span class='va'>log_model_complication</span><span class='op'>)</span>
+</code></pre>
+</div>
+<img src="analysis_regression_files/figure-html5/unnamed-chunk-15-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Test heteroscedasticity</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_heteroscedasticity.html'>check_heteroscedasticity</a></span><span class='op'>(</span><span class='va'>log_model_complication</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>NULL</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Test collinearity</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_collinearity.html'>check_collinearity</a></span><span class='op'>(</span><span class='va'>log_model_complication</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+ Term  VIF Increased SE Tolerance
+  age 2.21         1.49      0.45
+  bmi 1.09         1.04      0.92
+ hour 1.00         1.00      1.00
+
+High Correlation
+
+             Term   VIF Increased SE Tolerance
+     baseline_cvd 22.64         4.76      0.04
+ age:baseline_cvd 26.82         5.18      0.04</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Linearity assumption</span>
+<span class='co'>## Predict the probability (p) of complications arrising</span>
+<span class='va'>probabilities</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>log_model_complication</span>, type <span class='op'>=</span> <span class='st'>"response"</span><span class='op'>)</span>
+
+<span class='co'>## Select only numeric predictors</span>
+<span class='va'>lin_preds</span> <span class='op'>&lt;-</span> <span class='va'>surgery_dat</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='va'>age</span>,
+         <span class='va'>bmi</span>,
+         <span class='va'>hour</span><span class='op'>)</span> 
+
+<span class='va'>predictors_names</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>lin_preds</span><span class='op'>)</span>
+
+<span class='co'>## Bind the logit and tidy the data for plot</span>
+<span class='va'>lin_preds</span> <span class='op'>&lt;-</span> <span class='va'>lin_preds</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>mutate</span><span class='op'>(</span>logit <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>probabilities</span><span class='op'>/</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>-</span><span class='va'>probabilities</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>gather</span><span class='op'>(</span>key <span class='op'>=</span> <span class='st'>"predictors"</span>, value <span class='op'>=</span> <span class='st'>"predictor.value"</span>, <span class='op'>-</span><span class='va'>logit</span><span class='op'>)</span>
+
+<span class='co'>## Plot continuous predictors and the logit of the outcome</span>
+<span class='fu'>ggplot</span><span class='op'>(</span><span class='va'>lin_preds</span>, <span class='fu'>aes</span><span class='op'>(</span><span class='va'>logit</span>, <span class='va'>predictor.value</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'>geom_point</span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>0.5</span>, alpha <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>geom_smooth</span><span class='op'>(</span>method <span class='op'>=</span> <span class='st'>"loess"</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'>theme_bw</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'>facet_wrap</span><span class='op'>(</span><span class='op'>~</span><span class='va'>predictors</span>, scales <span class='op'>=</span> <span class='st'>"free_y"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="analysis_regression_files/figure-html5/unnamed-chunk-15-2.png" width="624" /></p>
+</div>
+<p>As there could be some issues related to the very strong collinearity
+(VIFs), we have to re-check with a model without the respective
+interaction term (as the <code>performance</code> package already
+suggests):</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Alternative model without interaction term</span>
+<span class='va'>log_model_complication_ni</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>complication</span> <span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>bmi</span> <span class='op'>+</span> <span class='va'>hour</span>, family <span class='op'>=</span> <span class='st'>"binomial"</span>, data <span class='op'>=</span> <span class='va'>surgery_dat</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>log_model_complication_ni</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>
+Call:
+glm(formula = complication ~ age + bmi + hour, family = &quot;binomial&quot;, 
+    data = surgery_dat)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-0.6712  -0.5547  -0.5224  -0.4840   2.2681  
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -2.606065   0.121089 -21.522  &lt; 2e-16 ***
+age          0.011033   0.001194   9.242  &lt; 2e-16 ***
+bmi         -0.003426   0.002465  -1.390  0.16450    
+hour         0.017424   0.005933   2.937  0.00332 ** 
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 22461  on 28708  degrees of freedom
+Residual deviance: 22363  on 28705  degrees of freedom
+AIC: 22371
+
+Number of Fisher Scoring iterations: 4</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Test model assumptions</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_model.html'>check_model</a></span><span class='op'>(</span><span class='va'>log_model_complication_ni</span><span class='op'>)</span>
+</code></pre>
+</div>
+<img src="analysis_regression_files/figure-html5/unnamed-chunk-16-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Test collinearity</span>
+<span class='fu'><a href='https://easystats.github.io/performance/reference/check_collinearity.html'>check_collinearity</a></span><span class='op'>(</span><span class='va'>log_model_complication_ni</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+ Term  VIF Increased SE Tolerance
+  age 1.00         1.00      1.00
+  bmi 1.00         1.00      1.00
+ hour 1.00         1.00      1.00</code></pre>
+</div>
+<p>So this looks good and we might tend to still include the interaction
+term (due to a potential inflation of VIFs). However, as the
+coefficients change very much, I would suggest to still report both sets
+of analysis.</p>
+<h2 id="effect-size">Effect size</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Calculate odds ratios (ORs)</span>
+<span class='va'>odds_ratios</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>log_model_complication</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>odds_ratios</span>
+</code></pre>
+</div>
+<pre><code>     (Intercept)              age     baseline_cvd              bmi 
+      0.06507058       1.01427694       1.81618080       0.99436583 
+            hour age:baseline_cvd 
+      1.01744128       0.99105051 </code></pre>
+</div>
+<h2 id="plotting-1">Plotting</h2>
+<p>Instead of the coefficient plot above, we will here showcase a new
+package and function: <code>or_plot</code> from the
+<code>finalfit</code> package. Very nice!</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Calculate odds ratios (ORs)</span>
+<span class='co'># load package</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/ewenharrison/finalfit'>finalfit</a></span><span class='op'>)</span>
+
+<span class='co'># Refine binary predictor</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>surgery_dat</span><span class='op'>$</span><span class='va'>baseline_cvd</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code> num [1:28709] 1 1 0 1 0 1 1 1 1 0 ...</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Replace</span>
+<span class='va'>surgery_dat</span><span class='op'>$</span><span class='va'>baseline_cvd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>surgery_dat</span><span class='op'>$</span><span class='va'>baseline_cvd</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"0"</span>,<span class='st'>"1"</span><span class='op'>)</span>, labels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"No"</span>,<span class='st'>"Yes"</span><span class='op'>)</span><span class='op'>)</span> 
+
+<span class='co'># Define DV and IV</span>
+<span class='va'>dependent</span> <span class='op'>=</span> <span class='st'>"complication"</span>
+<span class='va'>explanatory</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Age"</span>, <span class='st'>"CVD"</span>, <span class='st'>"BMI"</span>, <span class='st'>"Time"</span><span class='op'>)</span>
+
+<span class='co'># Create plot</span>
+<span class='va'>surgery_dat</span> <span class='op'><a href='https://rdrr.io/pkg/finalfit/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>rename</span><span class='op'>(</span><span class='st'>"Age"</span> <span class='op'>=</span> <span class='st'>"age"</span>,
+         <span class='st'>"CVD"</span> <span class='op'>=</span> <span class='st'>"baseline_cvd"</span>,
+         <span class='st'>"BMI"</span> <span class='op'>=</span> <span class='st'>"bmi"</span>,
+         <span class='st'>"Time"</span> <span class='op'>=</span> <span class='st'>"hour"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/finalfit/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/finalfit/man/or_plot.html'>or_plot</a></span><span class='op'>(</span><span class='va'>dependent</span>, <span class='va'>explanatory</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>labs</span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>"Odds of complication occuring"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Error in surgery_dat %&gt;% rename(Age = &quot;age&quot;, CVD = &quot;baseline_cvd&quot;, BMI = &quot;bmi&quot;, : non-numeric argument to binary operator</code></pre>
+<p><img src="analysis_regression_files/figure-html5/unnamed-chunk-18-1.png" width="624" /></p>
+</div>
+<h2 id="table-2">Table</h2>
+<p>After using a ready made function to create the results table for our
+linear regression model, we will now focus on higher customizability
+with a tidy approach using <code>broom</code>, <code>papaja</code> and
+<code>kableExtra</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://broom.tidymodels.org/'>broom</a></span><span class='op'>)</span>
+
+<span class='co'># Create model results dataframe</span>
+<span class='va'>log_table</span> <span class='op'>&lt;-</span> <span class='va'>log_model_complication</span> <span class='op'><a href='https://rdrr.io/pkg/finalfit/man/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://generics.r-lib.org/reference/tidy.html'>tidy</a></span><span class='op'>(</span><span class='op'>)</span>
+ 
+<span class='co'># Add column with ORs</span>
+<span class='va'>log_table</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>log_table</span>, <span class='va'>odds_ratios</span><span class='op'>)</span>
+
+<span class='co'># Rename rows</span>
+<span class='fu'><a href='https://rdrr.io/r/base/row.names.html'>row.names</a></span><span class='op'>(</span><span class='va'>log_table</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Intercept"</span>,<span class='st'>"Age"</span>,<span class='st'>"CVD"</span>,<span class='st'>"BMI"</span>,<span class='st'>"Time"</span>,<span class='st'>"Age x CVD"</span><span class='op'>)</span>
+
+<span class='co'># Label p values in line with APA standards</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/crsh/papaja'>papaja</a></span><span class='op'>)</span>
+<span class='va'>log_table</span><span class='op'>$</span><span class='va'>p.value</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/papaja/man/apa_p.html'>printp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>log_table</span><span class='op'>$</span><span class='va'>p.value</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='co'># Create table (select columns first, then refine table options)</span>
+<span class='va'>log_table</span> <span class='op'><a href='https://rdrr.io/pkg/finalfit/man/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'>select</span><span class='op'>(</span><span class='va'>estimate</span>,
+         <span class='va'>std.error</span>,
+         <span class='va'>odds_ratios</span>,
+         <span class='va'>p.value</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/finalfit/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/kableExtra/man/kbl.html'>kbl</a></span><span class='op'>(</span>digits <span class='op'>=</span> <span class='fl'>2</span>,
+      col.names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Estimate"</span>,<span class='st'>"SE"</span>,<span class='st'>"OR"</span>,<span class='st'>"p"</span><span class='op'>)</span>,
+      caption <span class='op'>=</span> <span class='st'>"Model Table ..."</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/finalfit/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/kableExtra/man/kable_styling.html'>kable_styling</a></span><span class='op'>(</span>bootstrap_options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"striped"</span>, <span class='st'>"hover"</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-19">Table 2: </span>Model Table …
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+SE
+</th>
+<th style="text-align:right;">
+OR
+</th>
+<th style="text-align:left;">
+p
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:right;">
+-2.73
+</td>
+<td style="text-align:right;">
+0.14
+</td>
+<td style="text-align:right;">
+0.07
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CVD
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+1.82
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:left;">
+.028
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Time
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+1.02
+</td>
+<td style="text-align:left;">
+.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age x CVD
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:left;">
+.001
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="interaction">Interaction</h2>
+<p>As we cannot interpret the interaction term without plotting it, we
+will now use the interactions package that offers a wider range of
+options and very nice basic functionality.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://interactions.jacob-long.com'>interactions</a></span><span class='op'>)</span>
+
+<span class='co'># Create plot</span>
+<span class='fu'><a href='https://interactions.jacob-long.com/reference/interact_plot.html'>interact_plot</a></span><span class='op'>(</span><span class='va'>log_model_complication</span>,
+              pred <span class='op'>=</span> <span class='va'>age</span>,
+              modx <span class='op'>=</span> <span class='va'>baseline_cvd</span>,
+              x.label <span class='op'>=</span> <span class='st'>"Age"</span>,
+              y.label <span class='op'>=</span> <span class='st'>"Complication (p)"</span>,
+              legend.main <span class='op'>=</span> <span class='st'>"CVD"</span>,
+              modx.labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"No"</span>,<span class='st'>"Yes"</span><span class='op'>)</span>,
+              main.title <span class='op'>=</span> <span class='st'>"Interaction plot"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="analysis_regression_files/figure-html5/unnamed-chunk-20-1.png" width="624" /></p>
+</div>
+<div class="sourceCode" id="cb17"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
@@ -2210,6 +3268,15 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
